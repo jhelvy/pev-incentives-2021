@@ -1,0 +1,10 @@
+coefficients,Model - High Income
+lambda,0.001 (0.000) ***
+type_salesTax,-505.908 (80.427) ***
+type_taxCredit,-1014.272 (86.567) ***
+type_taxDeduction,-2452.873 (85.243) ***
+timing_taxCredit_immediate,245.997 (72.562) ***
+timing_rebate_2,-20.858 (81.235) &nbsp;&nbsp;&nbsp;&nbsp;
+timing_rebate_6,-237.272 (82.948) &nbsp;**
+source_rebate_oem,-47.892 (82.062) &nbsp;&nbsp;&nbsp;&nbsp;
+source_rebate_dealer,-62.720 (81.997) &nbsp;&nbsp;&nbsp;&nbsp;

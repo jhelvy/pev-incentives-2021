@@ -1,0 +1,15 @@
+coefficients,table_format2
+lambda,0.001 (0.000) ***
+type_salesTax,-425.920 (63.394) ***
+type_taxCredit_mu,-1579.875 (79.828) ***
+type_taxDeduction_mu,-3229.007 (109.372) ***
+timing_taxCredit_immediate_mu,380.087 (113.268) ***
+timing_rebate_2_mu,-60.553 (75.624) &nbsp;&nbsp;&nbsp;&nbsp;
+timing_rebate_6,-325.414 (64.785) ***
+source_rebate_oem_mu,-15.102 (86.773) &nbsp;&nbsp;&nbsp;&nbsp;
+source_rebate_dealer,-60.786 (64.554) &nbsp;&nbsp;&nbsp;&nbsp;
+type_taxCredit_sigma,2022.811 (135.304) ***
+type_taxDeduction_sigma,2585.135 (154.380) ***
+timing_taxCredit_immediate_sigma,216.456 (374.287) &nbsp;&nbsp;&nbsp;&nbsp;
+timing_rebate_2_sigma,90.246 (309.939) &nbsp;&nbsp;&nbsp;&nbsp;
+source_rebate_oem_sigma,70.213 (284.672) &nbsp;&nbsp;&nbsp;&nbsp;

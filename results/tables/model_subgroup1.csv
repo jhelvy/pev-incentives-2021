@@ -1,0 +1,10 @@
+coefficients,Model - High Income,Model - Low Income,Model - New Car Shopper,Model - Used Car Shopper
+lambda,0.001 (0.000) ***,0.000 (0.000) ***,0.001 (0.000) ***,0.001 (0.000) ***
+type_salesTax,-505.908 (80.427) ***,-685.167 (118.954) ***,-582.979 (86.933) ***,-519.518 (104.088) ***
+type_taxCredit,-1014.272 (86.567) ***,-2224.282 (129.212) ***,-1180.253 (94.032) ***,-1798.569 (112.210) ***
+type_taxDeduction,-2452.873 (85.243) ***,-3064.693 (123.471) ***,-2692.281 (93.163) ***,-2650.252 (106.960) ***
+timing_taxCredit_immediate,245.997 (72.562) ***,721.748 (110.669) ***,139.423 (79.236) &nbsp;&nbsp;.,787.410 (95.952) ***
+timing_rebate_2,-20.858 (81.235) &nbsp;&nbsp;&nbsp;&nbsp;,-151.670 (116.334) &nbsp;&nbsp;&nbsp;&nbsp;,-132.557 (88.090) &nbsp;&nbsp;&nbsp;&nbsp;,14.589 (102.515) &nbsp;&nbsp;&nbsp;&nbsp;
+timing_rebate_6,-237.272 (82.948) &nbsp;**,-488.802 (116.569) ***,-329.794 (89.465) ***,-319.015 (103.521) &nbsp;**
+source_rebate_oem,-47.892 (82.062) &nbsp;&nbsp;&nbsp;&nbsp;,54.954 (115.389) &nbsp;&nbsp;&nbsp;&nbsp;,-56.129 (88.638) &nbsp;&nbsp;&nbsp;&nbsp;,74.962 (102.385) &nbsp;&nbsp;&nbsp;&nbsp;
+source_rebate_dealer,-62.720 (81.997) &nbsp;&nbsp;&nbsp;&nbsp;,-86.482 (116.903) &nbsp;&nbsp;&nbsp;&nbsp;,-139.000 (89.204) &nbsp;&nbsp;&nbsp;&nbsp;,27.655 (102.740) &nbsp;&nbsp;&nbsp;&nbsp;

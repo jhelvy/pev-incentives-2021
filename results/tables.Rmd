@@ -1,0 +1,76 @@
+---
+title: "table_output"
+author: "LR"
+date: "November 16, 2021"
+output:
+  html_document:
+    df_print: paged
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+library(kableExtra)
+library(here)
+library(tidyverse)
+#install.packages("kableExtra")
+```
+
+```{r echo = FALSE}
+
+# load(here::here('models', 'model_comb_wtp_m1_50k.RData'))
+# summary1 <- as.data.frame(make_coef_table(m1_comb_50k))
+# # write.csv(summary1, here::here("tables","simple_logit.csv"))
+# 
+# library(officer)
+# library(flextable)
+# 
+# # summary1 <- as.data.frame(read_csv(here::here("tables","simple_logit.csv")), strip.white=FALSE)
+# summary1 <- flextable(summary1)
+# summary1
+# theme_vanilla(summary1)
+
+```
+
+
+```{r echo=FALSE}
+
+
+# summary1 <- read_csv(here("tables", "simple_logit.csv"), trim_ws = FALSE)
+# summary1 <- read_csv(here("tables", "model_inc_high.csv"), trim_ws = FALSE)
+summary1 <- read_csv(here("tables", "model_subgroup1.csv"), trim_ws = FALSE)
+# summary1 <- summary1$coefTable
+# summary1 <- summary1 %>%
+#   rename("prob" = "Pr(>|z|)") %>%
+#   mutate(
+#     sig = ifelse(prob <= 0.001,'***',
+#                  ifelse(prob > 0.001 & prob <= 0.01, '**',
+#                         ifelse(prob >0.01 & prob <= 0.05, '*',
+#                                ifelse(prob > 0.05 & prob <= 0.1, '.', ' '))))) %>%
+#   mutate(
+#     Estimate = round(Estimate, 3),
+#     `Std. Error` = round(`Std. Error`, 3),
+#     table_format = paste0(Estimate, " (", `Std. Error`, ") ", sig)
+#   ) %>%
+#   select(table_format) %>%
+#   rename("Simple Logit Model" = "table_format")
+
+ # table1 <-kable(summary1, align = "r", digits = 19, format.args = list(trim = FALSE, digits = 19) )
+ # table1
+ # chartr("XXX", "&nbsp;&nbsp;&nbsp;", table1)
+ # replace(table1, table1 == "XXX", "   ")
+ # gsub("XXX", "&nbsp;&nbsp;&nbsp;", kable(summary1, align = "r", escape = FALSE, format.args = list(trim = FALSE) )) 
+ # 
+ # table1
+# LaTeX Table
+ table1 <- kable(summary1, align = "r", escape = FALSE) %>%
+   kable_styling() %>%
+   add_footnote("Signif. codes:  '***' = 0.001, '**' = 0.01, '*' = 0.05, '.' = 0.1, ' ' = 1", notation="number")
+ 
+ table1
+  # gsub("XXX", "&nbsp;&nbsp;&nbsp;&nbsp;", table1) 
+
+```
+
+

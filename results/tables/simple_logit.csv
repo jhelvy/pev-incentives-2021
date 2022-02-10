@@ -1,0 +1,10 @@
+coefficients,table_format2
+lambda,0.001 (0.000) ***
+type_salesTax,-556.075 (66.604) ***
+type_taxCredit,-1439.800 (71.996) ***
+type_taxDeduction,-2674.478 (70.243) ***
+timing_taxCredit_immediate,410.425 (61.063) ***
+timing_rebate_2,-67.968 (66.789) &nbsp;&nbsp;&nbsp;&nbsp;
+timing_rebate_6,-322.780 (67.667) ***
+source_rebate_oem,-1.971 (66.992) &nbsp;&nbsp;&nbsp;&nbsp;
+source_rebate_dealer,-66.226 (67.329) &nbsp;&nbsp;&nbsp;&nbsp;

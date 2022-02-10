@@ -1,0 +1,10 @@
+coefficients,Model - Low Income
+lambda,0.000 (0.000) ***
+type_salesTax,-685.167 (118.954) ***
+type_taxCredit,-2224.282 (129.212) ***
+type_taxDeduction,-3064.693 (123.471) ***
+timing_taxCredit_immediate,721.748 (110.669) ***
+timing_rebate_2,-151.670 (116.334) &nbsp;&nbsp;&nbsp;&nbsp;
+timing_rebate_6,-488.802 (116.569) ***
+source_rebate_oem,54.954 (115.389) &nbsp;&nbsp;&nbsp;&nbsp;
+source_rebate_dealer,-86.482 (116.903) &nbsp;&nbsp;&nbsp;&nbsp;

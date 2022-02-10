@@ -1,0 +1,10 @@
+coefficients,Model - New Car Shopper
+lambda,0.001 (0.000) ***
+type_salesTax,-582.979 (86.933) ***
+type_taxCredit,-1180.253 (94.032) ***
+type_taxDeduction,-2692.281 (93.163) ***
+timing_taxCredit_immediate,139.423 (79.236) &nbsp;&nbsp;.
+timing_rebate_2,-132.557 (88.090) &nbsp;&nbsp;&nbsp;&nbsp;
+timing_rebate_6,-329.794 (89.465) ***
+source_rebate_oem,-56.129 (88.638) &nbsp;&nbsp;&nbsp;&nbsp;
+source_rebate_dealer,-139.000 (89.204) &nbsp;&nbsp;&nbsp;&nbsp;

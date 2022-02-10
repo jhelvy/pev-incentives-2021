@@ -1,0 +1,10 @@
+coefficients,Model - Used Car Shopper
+lambda,0.001 (0.000) ***
+type_salesTax,-519.518 (104.088) ***
+type_taxCredit,-1798.569 (112.210) ***
+type_taxDeduction,-2650.252 (106.960) ***
+timing_taxCredit_immediate,787.410 (95.952) ***
+timing_rebate_2,14.589 (102.515) &nbsp;&nbsp;&nbsp;&nbsp;
+timing_rebate_6,-319.015 (103.521) &nbsp;**
+source_rebate_oem,74.962 (102.385) &nbsp;&nbsp;&nbsp;&nbsp;
+source_rebate_dealer,27.655 (102.740) &nbsp;&nbsp;&nbsp;&nbsp;
