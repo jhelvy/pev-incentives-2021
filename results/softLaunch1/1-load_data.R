@@ -9,31 +9,11 @@ library(lubridate)
 library(here)
 library(janitor)
 
-## **Don't save with password entered in**
-#password <- ""
-#email <- "lar1223@gwmail.gwu.edu"
 
-# Connect to formr
-#formr_connect(email, password)
-
-# Download raw data
-#raw_data_start <- formr_raw_results(survey_name = 'Vehicle_Incentive_Study_Dynata_start')
-#raw_data_main <- formr_raw_results(survey_name = 'Vehicle_Incentive_Study_Dynata')
 raw_data_start <- read_csv(here("data", "Vehicle_Incentive_Study_Dynata_start.csv"))
 raw_data_main <- read_csv(here("data", "Vehicle_Incentive_Study_Dynata.csv"))
 raw_data_demos <- read_csv(here("data", "Vehicle_Incentive_Study_Dynata_Demos.csv"))
 
-#pull out psid list
-psid_raw <- raw_data_start %>% 
-  select(psid)
-
-write_csv(psid_raw, here::here("psid_raw.csv"))
-
-psid_unique <- psid_raw %>%
-  group_by(psid) %>%
-  count(psid)
-
-write_csv(psid_unique, here::here("psid_unique.csv"))
 
 #Format start survey
 raw_data_start <- raw_data_start %>%

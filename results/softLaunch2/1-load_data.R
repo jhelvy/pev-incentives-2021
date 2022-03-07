@@ -9,32 +9,13 @@ library(lubridate)
 library(here)
 library(janitor)
 
-## **Don't save with password entered in**
-#password <- ""
-#email <- "lar1223@gwmail.gwu.edu"
-
-# Connect to formr
-#formr_connect(email, password)
 
 # Download raw data
-#raw_data_start <- formr_raw_results(survey_name = 'Vehicle_Incentive_Study_Dynata_start')
-#raw_data_main <- formr_raw_results(survey_name = 'Vehicle_Incentive_Study_Dynata')
 raw_data_start <- read_csv(here("data", "Vehicle_Incentive_Study_Dynata_start.csv"))
 raw_data_prac <- read_csv(here("data", "Vehicle_Incentive_Study_Dynata_prac.csv"))
 raw_data_main <- read_csv(here("data", "Vehicle_Incentive_Study_Dynata.csv"))
 raw_data_demos <- read_csv(here("data", "Vehicle_Incentive_Study_Dynata_Demos.csv"))
 
-#pull out psid list
-psid_raw <- raw_data_start %>% 
-  select(psid)
-
-write_csv(psid_raw, here::here("psid_raw.csv"))
-
-psid_unique <- psid_raw %>%
-  group_by(psid) %>%
-  count(psid)
-
-write_csv(psid_unique, here::here("psid_unique.csv"))
 
 #Format start survey
 raw_data_start <- raw_data_start %>%
@@ -250,18 +231,3 @@ data_comb <- data %>%
 
 tabyl(data_comb$income)
 
-#add buckets for Dynata
-data_comb <- data_comb %>%
-  mutate(
-    income_dynata = ifelse(((income== "under25") | (income == "inc_25to35") | (income == "inc_35to50")), "<50",
-                           ifelse((income== "inc_50to75"), "50_to_75",
-                                  ifelse((income== "inc_75to100"), "75_to_100",
-                                        ifelse((income== "inc_100to150"), "100_to_150",
-                                                 ifelse(((income== "inc_150to200") | (income == "inc_200to250") | (income == "inc_250to300") |
-                                                           (income == "inc_300to400")| (income == "inc_over400")), "150+",
-                                                        ifelse((income == "prefer_not_say"), "prefer_not_say", 0)))))))
- 
-data_comb %>%
-  tabyl(income_dynata)%>%
-  mutate(
-  income_dynata = fct_relevel(c("<50", "50_to_75", "75_to_100", "100_to_150", "150+", "prefer_not_say", "NA")))

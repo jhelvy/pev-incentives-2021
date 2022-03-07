@@ -94,124 +94,7 @@ m1_high_50k <- logitr::logitr(
 summary(m1_high_50k)
 save(m1_high_50k, file = here::here('models', 'model_comb_inc_high_m1_50k.RData'))
 
-# #with softLaunch1 data------------------
-# 
-# choiceData_comb <- read_csv(here("choiceData_comb.csv"))
-# 
-# #prep choice data for modeling
-# choiceData_comb <- choiceData_comb %>%
-#   # Fix amount and add 0s to attribute-specific levels
-#   fastDummies::dummy_cols(c(
-#     'type', 'timing_taxCredit', 'timing_rebate', 'source_rebate')) %>%
-#   # Add 0s to type-specific dummy-coded variables
-#   mutate(
-#     timing_taxCredit_immediate = type_taxCredit*timing_taxCredit_immediate,
-#     timing_taxCredit_tax_filing = type_taxCredit*timing_taxCredit_tax_filing,
-#     timing_rebate_0 = type_rebate*timing_rebate_0,
-#     timing_rebate_2 = type_rebate*timing_rebate_2,
-#     timing_rebate_6 = type_rebate*timing_rebate_6,
-#     source_rebate_dealer = type_rebate*source_rebate_dealer,
-#     source_rebate_government = type_rebate*source_rebate_government,
-#     source_rebate_oem = type_rebate*source_rebate_oem)
-# 
-# choiceData_comb$amount <- -1*choiceData_comb$amount 
-# 
-# tabyl(data_comb$income)
-# 
-# 
-# #Low Income
-# 
-# #prep/filter choiceData_comb
-# choiceData_low <- choiceData_comb %>% 
-#   left_join(
-#     data_comb %>% 
-#       select(session, income),
-#     by = "session") %>%
-#   filter(income == "under25" | income == "inc_25to35" | income == "inc_35to50")
-# length(unique(choiceData_low$session))
-# 
-# #m2 model for low income
-# 
-# m2_low <- logitr::logitr(
-#   data = choiceData_low, 
-#   choice = 'choice',
-#   obsID = 'obsID',
-#   price = 'amount',
-#   modelSpace = 'wtp',
-#   pars = c(
-#     'type_taxCredit', 'type_taxDeduction', 'type_rebate',
-#     'timing_taxCredit_immediate',
-#     'timing_rebate_0', 'timing_rebate_2',
-#     'source_rebate_oem', 'source_rebate_government')
-# )
-# 
-# summary(m2_low)
-# save(m2_low, file = here::here('models', 'model_comb_inc_low_m2.RData'))
-# 
-# #m1 model low (rebate 0wks govt)
-# 
-# m1_low <- logitr::logitr(
-#   data = choiceData_low, 
-#   choice = 'choice',
-#   obsID = 'obsID',
-#   price = 'amount',
-#   modelSpace = 'wtp',
-#   pars = c(
-#     'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
-#     'timing_taxCredit_immediate',
-#     'timing_rebate_2', 'timing_rebate_6',
-#     'source_rebate_oem', 'source_rebate_dealer')
-# )
-# 
-# summary(m1_low)
-# save(m1_low, file = here::here('models', 'model_comb_inc_low_m1.RData'))
-# 
-# #high income 
-# 
-# #prep/filter choiceData_comb
-# choiceData_high <- choiceData_comb %>% 
-#   left_join(
-#     data_comb %>% 
-#       select(session, income),
-#     by = "session") %>%
-#   filter(income != "under25" & income != "inc_25to35" & income != "inc_35to50")
-# length(unique(choiceData_high$session))
-# 
-# #m2 model for high income
-# m2_high <- logitr::logitr(
-#   data = choiceData_high, 
-#   choice = 'choice',
-#   obsID = 'obsID',
-#   price = 'amount',
-#   modelSpace = 'wtp',
-#   pars = c(
-#     'type_taxCredit', 'type_taxDeduction', 'type_rebate',
-#     'timing_taxCredit_immediate',
-#     'timing_rebate_0', 'timing_rebate_2',
-#     'source_rebate_oem', 'source_rebate_government')
-# )
-# 
-# summary(m2_high)
-# save(m2_high, file = here::here('models', 'model_comb_inc_high_m2.RData'))
-# 
-# #m1 model high (rebate 0wks govt)
-# 
-# m1_high <- logitr::logitr(
-#   data = choiceData_high, 
-#   choice = 'choice',
-#   obsID = 'obsID',
-#   price = 'amount',
-#   modelSpace = 'wtp',
-#   pars = c(
-#     'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
-#     'timing_taxCredit_immediate',
-#     'timing_rebate_2', 'timing_rebate_6',
-#     'source_rebate_oem', 'source_rebate_dealer')
-# )
-# 
-# summary(m1_high)
-# save(m1_high, file = here::here('models', 'model_comb_inc_high_m1.RData'))
-#-------------
+
 
 #2 - Exclusively New vs. Used/both
 
@@ -248,24 +131,6 @@ m1_new_50k <- logitr::logitr(
 summary(m1_new_50k)
 save(m1_new_50k, file = here::here('models', 'model_comb_new_m1_50k.RData'))
 
-# #m2 model new
-# 
-# m2_new <- logitr::logitr(
-#   data = choiceData_new, 
-#   choice = 'choice',
-#   obsID = 'obsID',
-#   price = 'amount',
-#   modelSpace = 'wtp',
-#   pars = c(
-#     'type_taxCredit', 'type_taxDeduction', 'type_rebate',
-#     'timing_taxCredit_immediate',
-#     'timing_rebate_0', 'timing_rebate_2',
-#     'source_rebate_oem', 'source_rebate_government')
-# )
-# 
-# summary(m2_new)
-# save(m2_new, file = here::here('models', 'model_comb_new_m2.RData'))
-
 
 #used and other (used, both and not sure)
 
@@ -296,122 +161,67 @@ m1_used_50k <- logitr::logitr(
 summary(m1_used_50k)
 save(m1_used_50k, file = here::here('models', 'model_comb_used_m1_50k.RData'))
 
-# #m2 model used
-# 
-# m2_used <- logitr::logitr(
-#   data = choiceData_used, 
-#   choice = 'choice',
-#   obsID = 'obsID',
-#   price = 'amount',
-#   modelSpace = 'wtp',
-#   pars = c(
-#     'type_taxCredit', 'type_taxDeduction', 'type_rebate',
-#     'timing_taxCredit_immediate',
-#     'timing_rebate_0', 'timing_rebate_2',
-#     'source_rebate_oem', 'source_rebate_government')
-# )
-# 
-# summary(m2_used)
-# save(m2_used, file = here::here('models', 'model_comb_used_m2.RData'))
 
-#with softLaunch1 data------------------------------------
+#Car budget
 
-# tabyl(data_comb$new_or_used)
-# 
-# #choice data new (choice 1)
-# 
-# #prep/filter data from choiceData_comb
-# choiceData_new <- choiceData_comb %>% 
-#   left_join(
-#     data_comb %>% 
-#       select(session, new_or_used),
-#     by = "session") %>%
-#   filter(new_or_used == 1)
-# length(unique(choiceData_new$session))
-# 
-# #m2 model new
-# 
-# m2_new <- logitr::logitr(
-#   data = choiceData_new, 
-#   choice = 'choice',
-#   obsID = 'obsID',
-#   price = 'amount',
-#   modelSpace = 'wtp',
-#   pars = c(
-#     'type_taxCredit', 'type_taxDeduction', 'type_rebate',
-#     'timing_taxCredit_immediate',
-#     'timing_rebate_0', 'timing_rebate_2',
-#     'source_rebate_oem', 'source_rebate_government')
-# )
-# 
-# summary(m2_new)
-# save(m2_new, file = here::here('models', 'model_comb_new_m2.RData'))
-# 
-# #m1 model new (rebate 0wks govt)
-# 
-# m1_new <- logitr::logitr(
-#   data = choiceData_new, 
-#   choice = 'choice',
-#   obsID = 'obsID',
-#   price = 'amount',
-#   modelSpace = 'wtp',
-#   pars = c(
-#     'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
-#     'timing_taxCredit_immediate',
-#     'timing_rebate_2', 'timing_rebate_6',
-#     'source_rebate_oem', 'source_rebate_dealer')
-# )
-# 
-# summary(m1_new)
-# save(m1_new, file = here::here('models', 'model_comb_new_m1.RData'))
-# 
-# #used and other (used, both and not sure)
-# 
-# #prep/filter choice data_comb 
-# choiceData_used <- choiceData_comb %>% 
-#   left_join(
-#     data_comb %>% 
-#       select(session, new_or_used),
-#     by = "session") %>%
-#   filter(new_or_used != 1)
-# length(unique(choiceData_used$session))
-# 
-# #m2 model used
-# 
-# m2_used <- logitr::logitr(
-#   data = choiceData_used, 
-#   choice = 'choice',
-#   obsID = 'obsID',
-#   price = 'amount',
-#   modelSpace = 'wtp',
-#   pars = c(
-#     'type_taxCredit', 'type_taxDeduction', 'type_rebate',
-#     'timing_taxCredit_immediate',
-#     'timing_rebate_0', 'timing_rebate_2',
-#     'source_rebate_oem', 'source_rebate_government')
-# )
-# 
-# summary(m2_used)
-# save(m2_used, file = here::here('models', 'model_comb_used_m2.RData'))
-# 
-# #m1 model used (rebate 0wks govt)
-# 
-# m1_used <- logitr::logitr(
-#   data = choiceData_used, 
-#   choice = 'choice',
-#   obsID = 'obsID',
-#   price = 'amount',
-#   modelSpace = 'wtp',
-#   pars = c(
-#     'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
-#     'timing_taxCredit_immediate',
-#     'timing_rebate_2', 'timing_rebate_6',
-#     'source_rebate_oem', 'source_rebate_dealer')
-# )
-# 
-# summary(m1_used)
-# save(m1_used, file = here::here('models', 'model_comb_used_m1.RData'))
-#--------------------
+#<30k
+#prep/filter choiceData_comb
+choiceData_carBudgetlow_50k <- choiceData_comb_50k %>% 
+  left_join(
+    data_comb_50k %>% 
+      select(session, carBudget),
+    by = "session") %>%
+  filter(carBudget == "under_10" | carBudget == "10-15" | carBudget == "15-20" | carBudget == "20-25" | carBudget == "25-30")
+length(unique(choiceData_carBudgetlow_50k$session))
+
+#m1 model (rebate 0wks govt)
+
+m1_carBudgetlow_50k <- logitr::logitr(
+  data = choiceData_carBudgetlow_50k, 
+  outcome = 'choice',
+  obsID = 'obsID',
+  price = 'amount',
+  modelSpace = 'wtp',
+  pars = c(
+    'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
+    'timing_taxCredit_immediate',
+    'timing_rebate_2', 'timing_rebate_6',
+    'source_rebate_oem', 'source_rebate_dealer')
+)
+
+summary(m1_carBudgetlow_50k)
+save(m1_carBudgetlow_50k, file = here::here('models', 'model_comb_carBudgetlow_m1_50k.RData'))
+
+#>30k
+#prep/filter choiceData_comb
+choiceData_carBudgethigh_50k <- choiceData_comb_50k %>% 
+  left_join(
+    data_comb_50k %>% 
+      select(session, carBudget),
+    by = "session") %>%
+  filter(carBudget != "under_10" & carBudget != "10-15" & carBudget != "15-20" & carBudget != "20-25" & carBudget != "25-30")
+length(unique(choiceData_carBudgethigh_50k$session))
+
+#m1 model (rebate 0wks govt)
+
+m1_carBudgethigh_50k <- logitr::logitr(
+  data = choiceData_carBudgethigh_50k, 
+  outcome = 'choice',
+  obsID = 'obsID',
+  price = 'amount',
+  modelSpace = 'wtp',
+  pars = c(
+    'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
+    'timing_taxCredit_immediate',
+    'timing_rebate_2', 'timing_rebate_6',
+    'source_rebate_oem', 'source_rebate_dealer')
+)
+
+summary(m1_carBudgethigh_50k)
+save(m1_carBudgethigh_50k, file = here::here('models', 'model_comb_carBudgethigh_m1_50k.RData'))
+
+
+#---------------------------------Appendix-----------------------------------------
 
 #3 - Consider PEV
 
@@ -474,7 +284,6 @@ summary(m1_noEV_50k)
 save(m1_noEV_50k, file = here::here('models', 'model_comb_noEV_m1_50k.RData'))
 
 
-
 #4 - Knowledge - Sub
 
 #Correct
@@ -535,9 +344,6 @@ m1_knowSubno_50k <- logitr::logitr(
 summary(m1_knowSubno_50k)
 save(m1_knowSubno_50k, file = here::here('models', 'model_comb_knowSubno_m1_50k.RData'))
 
-
-
-#---------------------------------Appendix-----------------------------------------
 
 #4a - Knowledge - Fuel Gas
 
@@ -994,72 +800,7 @@ m1_homeparkNo_50k <- logitr::logitr(
 summary(m1_homeparkNo_50k)
 save(m1_homeparkNo_50k, file = here::here('models', 'model_comb_homeparkNo_m1_50k.RData'))
 
-# test <- data_comb_50k %>% 
-#   select(session, parkingHousehold, carBudget) %>%
-#   mutate(
-#     home_parking = ifelse(str_detect(parkingHousehold, "SFH"),1,
-#                           ifelse(str_detect(parkingHousehold, "driveway"), 1,0))
-#   )%>%
-#   filter(home_parking != 1)
-# tabyl(test$carBudget)
 
-
-#Car budget
-#<30k
-#prep/filter choiceData_comb
-choiceData_carBudgetlow_50k <- choiceData_comb_50k %>% 
-  left_join(
-    data_comb_50k %>% 
-      select(session, carBudget),
-    by = "session") %>%
-  filter(carBudget == "under_10" | carBudget == "10-15" | carBudget == "15-20" | carBudget == "20-25" | carBudget == "25-30")
-length(unique(choiceData_carBudgetlow_50k$session))
-
-#m1 model (rebate 0wks govt)
-
-m1_carBudgetlow_50k <- logitr::logitr(
-  data = choiceData_carBudgetlow_50k, 
-  outcome = 'choice',
-  obsID = 'obsID',
-  price = 'amount',
-  modelSpace = 'wtp',
-  pars = c(
-    'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
-    'timing_taxCredit_immediate',
-    'timing_rebate_2', 'timing_rebate_6',
-    'source_rebate_oem', 'source_rebate_dealer')
-)
-
-summary(m1_carBudgetlow_50k)
-save(m1_carBudgetlow_50k, file = here::here('models', 'model_comb_carBudgetlow_m1_50k.RData'))
-
-#>30k
-#prep/filter choiceData_comb
-choiceData_carBudgethigh_50k <- choiceData_comb_50k %>% 
-  left_join(
-    data_comb_50k %>% 
-      select(session, carBudget),
-    by = "session") %>%
-  filter(carBudget != "under_10" & carBudget != "10-15" & carBudget != "15-20" & carBudget != "20-25" & carBudget != "25-30")
-length(unique(choiceData_carBudgethigh_50k$session))
-
-#m1 model (rebate 0wks govt)
-
-m1_carBudgethigh_50k <- logitr::logitr(
-  data = choiceData_carBudgethigh_50k, 
-  outcome = 'choice',
-  obsID = 'obsID',
-  price = 'amount',
-  modelSpace = 'wtp',
-  pars = c(
-    'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
-    'timing_taxCredit_immediate',
-    'timing_rebate_2', 'timing_rebate_6',
-    'source_rebate_oem', 'source_rebate_dealer')
-)
-
-summary(m1_carBudgethigh_50k)
-save(m1_carBudgethigh_50k, file = here::here('models', 'model_comb_carBudgethigh_m1_50k.RData'))
 
 
 #COVID employment

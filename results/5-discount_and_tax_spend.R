@@ -65,23 +65,6 @@ get_discount_rate(rebate2wks_value_mxl, timefame_rebate_2)
 
 evsales_2010to2019 <- raw_data_start <- read_csv(here("usEvSales.csv"))
 
-#Create vehicle list to add tax cred amounts to phev
-#evsaleslist <- evsales_2010to2019 %>% 
-# distinct(vehicle, category, year) %>%
-#  filter(category == "phev") %>%
-#  arrange(vehicle)
-#write_csv(evsaleslist, here::here("evsales_phev_vehicle_list.csv"))
-
-#Create EV phaseout list
-#evphaseout <- evsales_2010to2019 %>% 
-#   filter(brand == "Cadillac" | brand == "Chevrolet" | brand == "Tesla") %>%
-#   filter(year == 2019) %>%
-#   arrange(vehicle)
-#write_csv(evphaseout, here::here("evphaseout_list.csv"))
-
-#No 2020 sales
-#evsales2020 <- as.data.frame(c("", "category", "sales", "year", "source"),
-#                          c("all", "bev + phev", "328,000", "2020", "EV Volumes"))
 wtp_ci <- read_csv(here("wtp_ci_total_m1.csv")) %>% filter(str_detect(wtp_ci$par, "taxCredit_taxFiling"))
 evsales_phev <- read_csv(here("evsales_phev_vehicle_list.csv"))
 ev_phaseout <- read_csv(here("evphaseout_list.csv")) %>% select(vehicle, year, month, taxcredit)
@@ -133,9 +116,10 @@ evsales_taxcred_plot <- evsales_taxcred %>%
             size = 3, nudge_y = -0.02) +
   scale_x_discrete(breaks = as.character(seq(2011, 2019))) +
   scale_y_continuous(
-    expand = expansion(mult = c(0,0.05)))+
+    expand = expansion(mult = c(0,0.05)), 
+    labels = scales::dollar)+
   labs(x = 'Year',  
-       y = "Tax Credit Spend ($)") +
+       y = "Tax Credit Spend (USD $ Billion)") +
   annotate(
     'text', x = "2011", y = 2.6,
     color = col_value, vjust = 1, hjust = 0, fontface = 2, family = annFont,
@@ -146,12 +130,12 @@ evsales_taxcred_plot <- evsales_taxcred %>%
     label = "If the subsidy had been delivered as an immediate rebate,\nthe federal government could have saved $1.8 billion.") +
   theme_cowplot(font_family = mainFont)
 
-evsales_taxcred_plot
+# evsales_taxcred_plot
 
 # Save plots 
 ggsave(
-  filename = here('figs', 'fed_taxcred_spend.png'), 
+  filename = here('figs', 'fed_taxcred_spend.pdf'), 
   plot = evsales_taxcred_plot, 
-  width = 7, height = 5
+  width = 7, height = 5, device = cairo_pdf
 ) 
 

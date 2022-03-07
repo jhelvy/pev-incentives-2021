@@ -10,32 +10,13 @@ library(here)
 library(janitor)
 library(remotes)
 
-## **Don't save with password entered in**
-#password <- ""
-#email <- "lar1223@gwmail.gwu.edu"
-
-# Connect to formr
-#formr_connect(email, password)
 
 # Download raw data
-#raw_data_start <- formr_raw_results(survey_name = 'Vehicle_Incentive_Study_Dynata_start')
-#raw_data_main <- formr_raw_results(survey_name = 'Vehicle_Incentive_Study_Dynata')
 raw_data_start <- read_csv(here("data", "Vehicle_Incentive_Study_Dynata_start.csv"))
 raw_data_prac <- read_csv(here("data", "Vehicle_Incentive_Study_Dynata_prac.csv"))
 raw_data_main <- read_csv(here("data", "Vehicle_Incentive_Study_Dynata.csv"))
 raw_data_demos <- read_csv(here("data", "Vehicle_Incentive_Study_Dynata_Demos.csv"))
 
-# #pull out psid list
-# psid_raw <- raw_data_start %>% 
-#   select(psid)
-# 
-# write_csv(psid_raw, here::here("psid_raw.csv"))
-# 
-# psid_unique <- psid_raw %>%
-#   group_by(psid) %>%
-#   count(psid)
-# 
-# write_csv(psid_unique, here::here("psid_unique.csv"))
 
 #pull out zips 
 zips <- raw_data_start %>%
@@ -98,9 +79,6 @@ raw_data <- raw_data_start %>%
 
 data <- raw_data %T>%
   {print(paste("data no filter",nrow(.)))} %>%
-  # Remove duplicate session IDs
-  # distinct(session, .keep_all = TRUE) %T>%
-  # {print(paste("duplicate session IDs",nrow(.)))} %>%
   # 1 - filter out psid NAs
   filter(!is.na(psid)) %T>%
   {print(paste("psid NA",nrow(.)))} %>%
@@ -322,180 +300,3 @@ tabyl(data_comb_50k$education)
 
 tabyl(data_comb_50k$new_or_used)
 
-
-#Dynata Info (Income breakdown, psid file etc) ----------------------------------------------------------
-#add buckets for Dynata
-data_comb <- data_comb %>%
-  mutate(
-    income_dynata = ifelse(((income== "under25") | (income == "inc_25to35") | (income == "inc_35to50")), "<50",
-                           ifelse((income== "inc_50to75"), "50_to_75",
-                                  ifelse((income== "inc_75to100"), "75_to_100",
-                                        ifelse((income== "inc_100to150"), "100_to_150",
-                                                 ifelse(((income== "inc_150to200") | (income == "inc_200to250") | (income == "inc_250to300") |
-                                                           (income == "inc_300to400")| (income == "inc_over400")), "150+",
-                                                        ifelse((income == "prefer_not_say"), "prefer_not_say", 0)))))))
-
-income_order <- c("<50", "50_to_75", "75_to_100", "100_to_150", "150+", "prefer_not_say", "NA")
-
-data_comb %>%
-  tabyl(income_dynata)%>%
-  arrange(income_order)
-
-tabyl(data_comb$gender)
-
-tabyl(data_comb$ethnicity)
-
-tabyl(data_comb$education)
-
-tabyl(data_comb$new_or_used)
-
-#pull out psid list
-psid_valid <- data_comb %>% 
-  select(psid)
-
-write_csv(psid_valid, here::here("psid_valid.csv"))
-
-#ZIPS------------------------------------------------------------------------
-
-library(zipcodeR)
-
-# #sf1 zips
-data_sf1_zips <- read_csv(here("softLaunch1", "data", "Vehicle_Incentive_Study_Dynata_start.csv")) %>%
-   select(session, zip)
-
-# #50k zips
-data_50k_zips <- read_csv(here("50kincome", "data", "Vehicle_Incentive_Study_Dynata_start_50k.csv")) %>%
-  select(session, zip)
-
-zips_comb_raw <- zips %>%
-  bind_rows(data_sf1_zips) %>%
-  bind_rows(data_50k_zips)
-
-#add zips
-zips_comb_50k <- data_comb_50k %>%
-  left_join(zips_comb_raw, by = "session") %>%
-  select(session,zip) %>%
-  rename(zipcode = zip) %>%
-  mutate(
-    nchar = nchar(zipcode),
-    zipcode = ifelse(nchar <5 , paste0("0",zipcode),zipcode)
-  )
-
-#zips_comb_geo <- geocode_zip(zips_comb_50k$zipcode) 
-
-zips_comb_geo <- reverse_zipcode(zips_comb_50k$zipcode)
-
-zips_comb_50k <- zips_comb_50k %>%
-  left_join(zips_comb_geo) %>%
-  select(session, zipcode, nchar, lat, lng, population, population_density) %>%
-  mutate(
-    #US dept of agriculture https://www.ers.usda.gov/topics/rural-economy-population/rural-classifications/what-is-rural.aspx
-    rural = ifelse(population_density < 500,1,0)
-  )
-
-#add to filtered data
-
-data_comb_50k <- data_comb_50k %>%
-  left_join(zips_comb_50k)
-
-#save data filtered total + SoftLaunch1 and 50k income sample with zips
-write_csv(data_comb_50k, here::here("data_filtered_50k.csv"))
-
-#zips_map <- ggplot() +
-#  geom_polygon(
-#    data = fifty_states, 
-#    aes(x=long, y=lat, group = group),
-#    color="white", fill="grey92") +
-#  geom_point(
-#    data = zips_comb,
-#    aes(x = lng, y = lat),
-#    size = 0.8, color = "blue", shape = 20) +
-#  theme_void(base_size = 15)
-
-#remotes::install_github("hrbrmstr/albersusa")
-
-#Plot zips
-
-library(ggplot2)
-library(sf)
-library(rgeos)
-library(rnaturalearth)
-library(rnaturalearthhires)
-
-#filter for continental zips
-zips_comb_cont <- zips_comb_50k %>%
-  filter(lat > 22, lat < 50,
-         lng > -150, lng < -66)
-
-us_states_cont <- ne_states(
-  country = 'united states of america',
-  returnclass = 'sf') %>%
-  filter(! name %in% c('Alaska', 'Hawaii'))
-
-zips_map_cont <- ggplot() +
-  geom_sf(data = us_states_cont) +
-  geom_point(
-    data = zips_comb_cont,
-    aes(x = lng, y = lat),
-    size = 0.8, color = "blue", shape = 20) +
-  theme_void(base_size = 15)
-
-# Save plot 
-ggsave(
-  filename = here('figs', 'zips_map.png'), 
-  plot = zips_map_cont, 
-  width = 5, height = 3
-)  
-
-#Alaska zips
-zips_comb_AK <- zips_comb_50k %>%
-  filter(lat > 50, lat < 80,
-         lng > -190, lng < -130)
-
-AK <- ne_states(
-  country = 'united states of america',
-  returnclass = 'sf') %>%
-  filter(name == 'Alaska')
-
-AK_map <- ggplot() +
-  geom_sf(data = AK) +
-  coord_sf(xlim = c(-190, -130), ylim = c(50, 80))+
-  geom_point(
-    data = zips_comb_AK,
-    aes(x = lng, y = lat),
-    size = 6, color = "blue", shape = 20) +
-  theme_void()
-
-# Save plot 
-ggsave(
-  filename = here('figs', 'AK_map.png'), 
-  plot = AK_map, 
-  width = 5, height = 3
-)  
-
-
-#Hawaii zips
-zips_comb_HI <- zips_comb_50k %>%
-  filter(lat > 18, lat < 22,
-         lng > -162, lng < -152)
-
-HI <- ne_states(
-  country = 'united states of america',
-  returnclass = 'sf') %>%
-  filter(name == 'Hawaii')
-
-HI_map <- ggplot() +
-  geom_sf(data = HI) +
-  coord_sf(xlim = c(-162, -152), ylim = c(18, 25))+
-  geom_point(
-    data = zips_comb_HI,
-    aes(x = lng, y = lat),
-    size = 6, color = "blue", shape = 20) +
-  theme_void()
-
-# Save plot 
-ggsave(
-  filename = here('figs', 'HI_map.png'), 
-  plot = HI_map, 
-  width = 5, height = 3
-)  
