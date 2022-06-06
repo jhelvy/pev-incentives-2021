@@ -9,6 +9,8 @@ library(lubridate)
 library(here)
 library(janitor)
 library(remotes)
+library(zipcodeR)
+library(readxl)
 
 
 # Download raw data
@@ -227,7 +229,49 @@ data_comb_50k <- data %>%
 #save data filtered total + SoftLaunch1 and 50k income sample
 write_csv(data_comb_50k, here::here("data_filtered_50k.csv"))
 
+#ZIPS------------------------------------------------------------------------
 
+# #sf1 zips
+data_sf1_zips <- read_csv(here("softLaunch1", "data", "Vehicle_Incentive_Study_Dynata_start.csv")) %>%
+  select(session, zip)
+
+# #50k zips
+data_50k_zips <- read_csv(here("50kincome", "data", "Vehicle_Incentive_Study_Dynata_start_50k.csv")) %>%
+  select(session, zip)
+
+zips_comb_raw <- zips %>%
+  bind_rows(data_sf1_zips) %>%
+  bind_rows(data_50k_zips)
+
+#add zips
+zips_comb_50k <- data_comb_50k %>%
+  left_join(zips_comb_raw, by = "session") %>%
+  select(session,zip) %>%
+  rename(zipcode = zip) %>%
+  mutate(
+    nchar = nchar(zipcode),
+    zipcode = ifelse(nchar <5 , paste0("0",zipcode),zipcode)
+  )
+
+#zips_comb_geo <- geocode_zip(zips_comb_50k$zipcode) 
+
+zips_comb_geo <- reverse_zipcode(zips_comb_50k$zipcode)
+
+zips_comb_50k <- zips_comb_50k %>%
+  left_join(zips_comb_geo) %>%
+  select(session, zipcode, nchar, lat, lng, population, population_density) %>%
+  mutate(
+    #US dept of agriculture https://www.ers.usda.gov/topics/rural-economy-population/rural-classifications/what-is-rural.aspx
+    rural = ifelse(population_density < 500,1,0)
+  )
+
+#add to filtered data
+
+data_comb_50k <- data_comb_50k %>%
+  left_join(zips_comb_50k)
+
+#save data filtered total + SoftLaunch1 and 50k income sample with zips
+write_csv(data_comb_50k, here::here("data_filtered_50k.csv"))
 
 #combine choice data from SoftLaunch1 and 50k income sample ----------------------------------------------------------
 choiceData <- read_csv(here("choiceData.csv"))
@@ -300,3 +344,84 @@ tabyl(data_comb_50k$education)
 
 tabyl(data_comb_50k$new_or_used)
 
+#Adding Cost of Living (COL) context to data--------------------------------
+
+data_comb_50k <- read_csv(here("data_filtered_50k.csv"))
+choiceData_comb_50k <- read_csv(here("choiceData_comb_50k.csv"))
+
+#filter zips from data
+data_comb_50k_zip <- data_comb_50k %>%
+  select(session, zipcode)
+
+#Regional Price Parity - BEA 2020
+rpp <- read_excel(here("rpp1221.xlsx"), sheet = "Table 4", skip = 3)
+head(rpp)
+
+#clean up rpp import col names
+rpp <- rpp %>% 
+  rename(
+    area = ...1,
+    rpp = ...2,
+    goods = ...3,
+    regional_price_deflators_all = ...7,
+    rpd_yoy = ...8)
+
+#pull in city (zipcodeR)
+#
+# geo_data_comb <- reverse_zipcode(data_comb_50k_zip$zipcode) %>%
+#   select(zipcode, post_office_city, lat,lng)
+# 
+# data_comb_50k_zip <- data_comb_50k_zip %>%
+#   left_join(geo_data_comb, by = "zipcode") %>%
+#   rename(
+#     area = "post_office_city")
+# 
+# data_comb_50k_zip <- data_comb_50k_zip %>%
+#   left_join(rpp, by = "area")
+
+#HUD-USPS cross walk ZIP to CBSA Q4 2021 US Dept of Housing and Urban Dev https://www.huduser.gov/portal/datasets/usps_crosswalk.html#data 
+cbsa <- read_excel(here("ZIP_CBSA_122021.xlsx"))
+head(cbsa)
+# length(unique(cbsa$zip))
+
+# dups <- cbsa %>%
+#   filter(duplicated(zipcode)) %>%
+#   arrange(zipcode)
+
+#clean up cbsa file
+cbsa <- cbsa %>%
+  #for zips with multiples cbsas, choose cbsa containing over 50% ratio of residential addresses in that zip 
+  #res_raito - The ratio of residential addresses in the ZIP – Tract, County, or CBSA part to the total number of residential addresses in the entire ZIP https://www.huduser.gov/portal/datasets/usps_crosswalk.html#codebook
+  filter(res_ratio > .5) %>%
+  rename(
+    zipcode = zip
+  ) %>%
+  select(zipcode, cbsa)
+
+#CBSA reference w/ cbsa codes and names Census Bureau March 2020 https://www.census.gov/geographies/reference-files/time-series/demo/metro-micro/delineation-files.html
+cbsa_ref <- read_excel(here("cbsa_2020.xls"), skip = 2)
+head(cbsa_ref)
+
+cbsa_ref <- cbsa_ref %>%
+  rename(
+    cbsa = 'CBSA Code',
+    cbsa_name = 'CBSA Title'
+  ) %>% 
+  select(cbsa, cbsa_name)
+
+#join cbsa codes and names
+cbsa <- cbsa %>% 
+  left_join(cbsa_ref, by = "cbsa") 
+
+#join data to cbsa info
+data_cbsa <- data_comb_50k_zip %>%
+  left_join(cbsa, by = c("zipcode")) %>%
+  distinct(session, .keep_all = TRUE)
+
+data_cbsa <- data_cbsa %>%
+  rename(
+    area = cbsa_name
+  ) %>%
+  left_join(rpp, by = "area") %>%
+  select(session, zipcode, area, rpp)
+tally(data_cbsa %>% filter(is.na(rpp)))
