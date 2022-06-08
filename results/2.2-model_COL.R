@@ -75,6 +75,7 @@ cbsa_ref <- cbsa_ref %>%
   ) %>% 
   select(cbsa, cbsa_name)
 
+
 #join cbsa codes and names
 cbsa <- cbsa %>% 
   left_join(cbsa_ref, by = "cbsa") 
@@ -92,6 +93,11 @@ data_cbsa <- data_cbsa %>%
   select(session, zipcode, area, rpp)
 tally(data_cbsa %>% filter(is.na(rpp)))
 
+#NA data frame
+data_cbsa_NA <- data_cbsa %>% 
+  filter(is.na(rpp))
+tally(data_cbsa_NA %>% filter(is.na(area)))
+
 #calculate adj factor %
 data_cbsa <- data_cbsa %>%
   mutate(
@@ -106,7 +112,10 @@ choiceData_comb_50k_col <- choiceData_comb_50k %>%
 choiceData_comb_50k_col <- choiceData_comb_50k_col %>%
   mutate(
     amount_rpp_adj = round(amount+(amount*rpp_adj),0)
-  )
+  ) %>%
+  filter(!is.na(amount_rpp_adj)) %>%
+  mutate(
+    obsID = rep(seq(n() / 4), each = 4))
 
 #add data for model
 choiceData_comb_50k_col <- choiceData_comb_50k_col %>%
@@ -125,6 +134,7 @@ choiceData_comb_50k_col <- choiceData_comb_50k_col %>%
     source_rebate_oem = type_rebate*source_rebate_oem)
 
 choiceData_comb_50k_col$amount_rpp_adj <- -1*choiceData_comb_50k_col$amount_rpp_adj
+length(unique(choiceData_comb_50k_col$session))
 
 # Model 1 - baselines:
 # Type: Rebate
@@ -185,7 +195,10 @@ choiceData_low_50k_col <- choiceData_comb_50k_col %>%
     data_comb_50k %>% 
       select(session, income),
     by = "session") %>%
-  filter(income == "under25" | income == "inc_25to35" | income == "inc_35to50")
+  filter(income == "under25" | income == "inc_25to35" | income == "inc_35to50") %>%
+  mutate(
+    obsID = rep(seq(n() / 4), each = 4)) %>%
+  select(-id)
 length(unique(choiceData_low_50k_col$session))
 
 #m1 model low (rebate 0wks govt)
@@ -215,7 +228,9 @@ choiceData_high_50k_col <- choiceData_comb_50k_col %>%
     data_comb_50k %>% 
       select(session, income),
     by = "session") %>%
-  filter(income != "under25" & income != "inc_25to35" & income != "inc_35to50")
+  filter(income != "under25" & income != "inc_25to35" & income != "inc_35to50") %>%
+  mutate(
+    obsID = rep(seq(n() / 4), each = 4))
 length(unique(choiceData_high_50k_col$session))
 
 #m1 model high (rebate 0wks govt)
@@ -248,7 +263,9 @@ choiceData_new_50k_col <- choiceData_comb_50k_col %>%
     data_comb_50k %>% 
       select(session, new_or_used),
     by = "session") %>%
-  filter(new_or_used == 1)
+  filter(new_or_used == 1) %>%
+  mutate(
+    obsID = rep(seq(n() / 4), each = 4))
 length(unique(choiceData_new_50k_col$session))
 
 #m1 model new (rebate 0wks govt)
@@ -257,7 +274,7 @@ m1_new_50k_col <- logitr::logitr(
   data = choiceData_new_50k_col, 
   outcome = 'choice',
   obsID = 'obsID',
-  price = 'amount',
+  price = 'amount_rpp_adj',
   modelSpace = 'wtp',
   pars = c(
     'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
@@ -278,7 +295,9 @@ choiceData_used_50k_col <- choiceData_comb_50k_col %>%
     data_comb_50k %>% 
       select(session, new_or_used),
     by = "session") %>%
-  filter(new_or_used != 1)
+  filter(new_or_used != 1) %>%
+  mutate(
+    obsID = rep(seq(n() / 4), each = 4))
 length(unique(choiceData_used_50k_col$session))
 
 #m1 model used (rebate 0wks govt)
@@ -287,7 +306,7 @@ m1_used_50k_col <- logitr::logitr(
   data = choiceData_used_50k_col, 
   outcome = 'choice',
   obsID = 'obsID',
-  price = 'amount',
+  price = 'amount_rpp_adj',
   modelSpace = 'wtp',
   pars = c(
     'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
@@ -309,7 +328,9 @@ choiceData_carBudgetlow_50k_col <- choiceData_comb_50k_col %>%
     data_comb_50k %>% 
       select(session, carBudget),
     by = "session") %>%
-  filter(carBudget == "under_10" | carBudget == "10-15" | carBudget == "15-20" | carBudget == "20-25" | carBudget == "25-30")
+  filter(carBudget == "under_10" | carBudget == "10-15" | carBudget == "15-20" | carBudget == "20-25" | carBudget == "25-30") %>%
+  mutate(
+    obsID = rep(seq(n() / 4), each = 4))
 length(unique(choiceData_carBudgetlow_50k_col$session))
 
 #m1 model (rebate 0wks govt)
@@ -337,7 +358,9 @@ choiceData_carBudgethigh_50k_col <- choiceData_comb_50k_col %>%
     data_comb_50k %>% 
       select(session, carBudget),
     by = "session") %>%
-  filter(carBudget != "under_10" & carBudget != "10-15" & carBudget != "15-20" & carBudget != "20-25" & carBudget != "25-30")
+  filter(carBudget != "under_10" & carBudget != "10-15" & carBudget != "15-20" & carBudget != "20-25" & carBudget != "25-30") %>%
+  mutate(
+    obsID = rep(seq(n() / 4), each = 4))
 length(unique(choiceData_carBudgethigh_50k_col$session))
 
 #m1 model (rebate 0wks govt)
@@ -358,3 +381,45 @@ m1_carBudgethigh_50k_col <- logitr::logitr(
 summary(m1_carBudgethigh_50k_col)
 save(m1_carBudgethigh_50k_col, file = here::here('models', 'model_comb_carBudgethigh_m1_50k_col.RData'))
 
+#flextable
+
+library(officer)
+library(flextable)
+
+summary_sl2 <- make_coef_table3(m1_comb_50k_col)
+summary_mxl2 <- make_coef_table3(mxl_comb_50k_col) %>% mutate(coefficients = str_remove(coefficients, "_mu"))
+summary_high2 <- make_coef_table3(m1_high_50k_col) 
+summary_low2 <- make_coef_table3(m1_low_50k_col) 
+summary_new2 <- make_coef_table3(m1_new_50k_col) 
+summary_used2 <- make_coef_table3(m1_used_50k_col)
+summary_more30k <- make_coef_table3(m1_carBudgethigh_50k_col)
+summary_less30k <- make_coef_table3(m1_carBudgetlow_50k_col)
+
+
+summary1 <- summary_sl2 %>%
+  full_join(summary_mxl2, by = "coefficients") %>%
+  left_join(summary_high2, by = "coefficients") %>%
+  left_join(summary_low2, by = "coefficients") %>%
+  left_join(summary_new2, by = "coefficients") %>%
+  left_join(summary_used2,by = "coefficients") %>%
+  left_join(summary_more30k,by = "coefficients") %>%
+  left_join(summary_less30k,by = "coefficients") 
+
+
+summary1 <- flextable(summary1)
+theme_vanilla(summary1)
+# summary1 <- set_header_labels(summary1,
+#                               values = list(
+#                                 
+#                               ))
+summary1 <- add_header_row(
+  summary1, values = c("", "Simple Logit", "Mixed Logit", "High Income", "Low Income", "New Car Buyers", "Used Car Buyers", "Budget >$30k", "Budget <$30k"),
+  colwidths = c(1,1,1,1,1,1,1,1,1)
+)
+#summary1 <- add_header_lines( summary1, values = c("Simple Logit Model"))
+summary1<- autofit(summary1)
+summary1 <- add_footer_lines(summary1, values = "Signif. codes:  '***' = 0.001, '**' = 0.01, '*' = 0.05, '.' = 0.1, ' ' = 1")
+summary1 <- align(summary1, align = "right", part = "body")
+# summary1 <- align(summary1, j= c("(Error)"), align = "center", part = "all")
+# summary1 <- align(summary1, i = c("Simple Logit Model"), align = "center")
+print(summary1, preview = "docx")
