@@ -44,6 +44,8 @@ m1_comb_50k <- logitr::logitr(
   obsID = 'obsID',
   price = 'amount',
   modelSpace = 'wtp',
+  clusterID = 'id',
+  numMultiStarts = 30,
   pars = c(
     'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
     'timing_taxCredit_immediate',
@@ -67,6 +69,10 @@ mxl_comb_50k <- logitr::logitr(
   obsID  = 'obsID',
   price = 'amount',
   modelSpace = 'wtp',
+  panelID = 'id',
+  clusterID = 'id',
+  numMultiStarts = 30,
+  numCores = 1,
   pars = c(
     'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
     'timing_taxCredit_immediate',

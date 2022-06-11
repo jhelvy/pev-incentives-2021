@@ -57,8 +57,8 @@ make_coef_table3 <- function(model) {
               prob > 0.05 & prob <= 0.1, '.', "XXX"))))
     ) %>%
     mutate(
-      Estimate = sprintf("%.3f", Estimate),
-      `Std. Error` = sprintf("%2.3f", `Std. Error`),
+      Estimate = sprintf("%.1f", Estimate),
+      `Std. Error` = sprintf("%2.1f", `Std. Error`),
       `Std. Error` = paste0("(", `Std. Error`, ")"),
       table_format = ifelse(nchar(`Std. Error`) == 6 ,paste0(Estimate, " ", sig, " ", `Std. Error`),
                             paste0(Estimate," ", sig, " ", `Std. Error`)),

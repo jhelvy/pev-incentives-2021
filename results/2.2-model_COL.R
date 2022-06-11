@@ -108,13 +108,17 @@ data_cbsa <- data_cbsa %>%
 choiceData_comb_50k_col <- choiceData_comb_50k %>%
   left_join(data_cbsa, by = "session")
 
-#adjust amounts
+#adjust amounts & filter out NAs
 choiceData_comb_50k_col <- choiceData_comb_50k_col %>%
   mutate(
     amount_rpp_adj = round(amount+(amount*rpp_adj),0)
   ) %>%
-  filter(!is.na(amount_rpp_adj)) %>%
+  filter(!is.na(amount_rpp_adj)) 
+
+#reset id & obsID for COL dataset
+choiceData_comb_50k_col <- choiceData_comb_50k_col %>%
   mutate(
+    id = rep(seq(1:length(unique(choiceData_comb_50k_col$session))), each = 40),
     obsID = rep(seq(n() / 4), each = 4))
 
 #add data for model
@@ -148,6 +152,8 @@ m1_comb_50k_col <- logitr::logitr(
   obsID = "obsID",
   price = "amount_rpp_adj",
   modelSpace = "wtp",
+  clusterID = 'id',
+  numMultiStarts = 30,
   pars = c(
     "type_salesTax", "type_taxCredit", "type_taxDeduction",
     "timing_taxCredit_immediate",
@@ -171,6 +177,10 @@ mxl_comb_50k_col <- logitr::logitr(
   obsID  = 'obsID',
   price = 'amount_rpp_adj',
   modelSpace = 'wtp',
+  panelID = 'id',
+  clusterID = 'id',
+  numMultiStarts = 30,
+  numCores = 1,
   pars = c(
     'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
     'timing_taxCredit_immediate',
@@ -195,11 +205,14 @@ choiceData_low_50k_col <- choiceData_comb_50k_col %>%
     data_comb_50k %>% 
       select(session, income),
     by = "session") %>%
-  filter(income == "under25" | income == "inc_25to35" | income == "inc_35to50") %>%
-  mutate(
-    obsID = rep(seq(n() / 4), each = 4)) %>%
-  select(-id)
+  filter(income == "under25" | income == "inc_25to35" | income == "inc_35to50")
 length(unique(choiceData_low_50k_col$session))
+
+#fix id & obsID for low income COL
+choiceData_low_50k_col <- choiceData_low_50k_col %>%
+  mutate(
+    id = rep(seq(1:length(unique(choiceData_low_50k_col$session))), each = 40),
+    obsID = rep(seq(n() / 4), each = 4))
 
 #m1 model low (rebate 0wks govt)
 
@@ -209,6 +222,8 @@ m1_low_50k_col <- logitr::logitr(
   obsID = 'obsID',
   price = 'amount_rpp_adj',
   modelSpace = 'wtp',
+  clusterID = 'id',
+  numMultiStarts = 30,
   pars = c(
     'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
     'timing_taxCredit_immediate',
@@ -228,10 +243,14 @@ choiceData_high_50k_col <- choiceData_comb_50k_col %>%
     data_comb_50k %>% 
       select(session, income),
     by = "session") %>%
-  filter(income != "under25" & income != "inc_25to35" & income != "inc_35to50") %>%
-  mutate(
-    obsID = rep(seq(n() / 4), each = 4))
+  filter(income != "under25" & income != "inc_25to35" & income != "inc_35to50")
 length(unique(choiceData_high_50k_col$session))
+
+#fix id & obsID for high income COL
+choiceData_high_50k_col <- choiceData_high_50k_col %>%
+  mutate(
+    id = rep(seq(1:length(unique(choiceData_high_50k_col$session))), each = 40),
+    obsID = rep(seq(n() / 4), each = 4))
 
 #m1 model high (rebate 0wks govt)
 
@@ -241,6 +260,8 @@ m1_high_50k_col <- logitr::logitr(
   obsID = 'obsID',
   price = 'amount_rpp_adj',
   modelSpace = 'wtp',
+  clusterID = 'id',
+  numMultiStarts = 30,
   pars = c(
     'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
     'timing_taxCredit_immediate',
@@ -268,6 +289,12 @@ choiceData_new_50k_col <- choiceData_comb_50k_col %>%
     obsID = rep(seq(n() / 4), each = 4))
 length(unique(choiceData_new_50k_col$session))
 
+#fix id & obsID for new buyers col
+choiceData_new_50k_col <- choiceData_new_50k_col %>%
+  mutate(
+    id = rep(seq(1:length(unique(choiceData_new_50k_col$session))), each = 40),
+    obsID = rep(seq(n() / 4), each = 4))
+
 #m1 model new (rebate 0wks govt)
 
 m1_new_50k_col <- logitr::logitr(
@@ -276,6 +303,8 @@ m1_new_50k_col <- logitr::logitr(
   obsID = 'obsID',
   price = 'amount_rpp_adj',
   modelSpace = 'wtp',
+  clusterID = 'id',
+  numMultiStarts = 30,
   pars = c(
     'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
     'timing_taxCredit_immediate',
@@ -295,10 +324,14 @@ choiceData_used_50k_col <- choiceData_comb_50k_col %>%
     data_comb_50k %>% 
       select(session, new_or_used),
     by = "session") %>%
-  filter(new_or_used != 1) %>%
-  mutate(
-    obsID = rep(seq(n() / 4), each = 4))
+  filter(new_or_used != 1)
 length(unique(choiceData_used_50k_col$session))
+
+#fix id & obsID for used/other buyers COL
+choiceData_used_50k_col <- choiceData_used_50k_col %>%
+  mutate(
+    id = rep(seq(1:length(unique(choiceData_used_50k_col$session))), each = 40),
+    obsID = rep(seq(n() / 4), each = 4))
 
 #m1 model used (rebate 0wks govt)
 
@@ -308,6 +341,8 @@ m1_used_50k_col <- logitr::logitr(
   obsID = 'obsID',
   price = 'amount_rpp_adj',
   modelSpace = 'wtp',
+  clusterID = 'id',
+  numMultiStarts = 30,
   pars = c(
     'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
     'timing_taxCredit_immediate',
@@ -328,10 +363,14 @@ choiceData_carBudgetlow_50k_col <- choiceData_comb_50k_col %>%
     data_comb_50k %>% 
       select(session, carBudget),
     by = "session") %>%
-  filter(carBudget == "under_10" | carBudget == "10-15" | carBudget == "15-20" | carBudget == "20-25" | carBudget == "25-30") %>%
-  mutate(
-    obsID = rep(seq(n() / 4), each = 4))
+  filter(carBudget == "under_10" | carBudget == "10-15" | carBudget == "15-20" | carBudget == "20-25" | carBudget == "25-30")
 length(unique(choiceData_carBudgetlow_50k_col$session))
+
+#fix id & obsID for <$30k budget COL
+choiceData_carBudgetlow_50k_col <- choiceData_carBudgetlow_50k_col %>%
+  mutate(
+    id = rep(seq(1:length(unique(choiceData_carBudgetlow_50k_col$session))), each = 40),
+    obsID = rep(seq(n() / 4), each = 4))
 
 #m1 model (rebate 0wks govt)
 
@@ -341,6 +380,8 @@ m1_carBudgetlow_50k_col <- logitr::logitr(
   obsID = 'obsID',
   price = 'amount_rpp_adj',
   modelSpace = 'wtp',
+  clusterID = 'id',
+  numMultiStarts = 30,
   pars = c(
     'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
     'timing_taxCredit_immediate',
@@ -358,10 +399,14 @@ choiceData_carBudgethigh_50k_col <- choiceData_comb_50k_col %>%
     data_comb_50k %>% 
       select(session, carBudget),
     by = "session") %>%
-  filter(carBudget != "under_10" & carBudget != "10-15" & carBudget != "15-20" & carBudget != "20-25" & carBudget != "25-30") %>%
-  mutate(
-    obsID = rep(seq(n() / 4), each = 4))
+  filter(carBudget != "under_10" & carBudget != "10-15" & carBudget != "15-20" & carBudget != "20-25" & carBudget != "25-30")
 length(unique(choiceData_carBudgethigh_50k_col$session))
+
+#fix id & obsID for >$30k budget COL
+choiceData_carBudgethigh_50k_col <- choiceData_carBudgethigh_50k_col %>%
+  mutate(
+    id = rep(seq(1:length(unique(choiceData_carBudgethigh_50k_col$session))), each = 40),
+    obsID = rep(seq(n() / 4), each = 4))
 
 #m1 model (rebate 0wks govt)
 
@@ -371,6 +416,8 @@ m1_carBudgethigh_50k_col <- logitr::logitr(
   obsID = 'obsID',
   price = 'amount_rpp_adj',
   modelSpace = 'wtp',
+  clusterID = 'id',
+  numMultiStarts = 30,
   pars = c(
     'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
     'timing_taxCredit_immediate',
@@ -383,11 +430,13 @@ save(m1_carBudgethigh_50k_col, file = here::here('models', 'model_comb_carBudget
 
 #flextable
 
+source("0-functions.R")
+
 library(officer)
 library(flextable)
 
 summary_sl2 <- make_coef_table3(m1_comb_50k_col)
-summary_mxl2 <- make_coef_table3(mxl_comb_50k_col) %>% mutate(coefficients = str_remove(coefficients, "_mu"))
+summary_mxl2 <- make_coef_table3(mxl_comb_50k_col) #%>% mutate(coefficients = str_remove(coefficients, "_mu"))
 summary_high2 <- make_coef_table3(m1_high_50k_col) 
 summary_low2 <- make_coef_table3(m1_low_50k_col) 
 summary_new2 <- make_coef_table3(m1_new_50k_col) 
