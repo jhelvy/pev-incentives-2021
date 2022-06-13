@@ -11,8 +11,8 @@ library(gtsummary)
 options(scipen=999)
 
 #read in choice data from combined model +50k
-data_comb_50k <- read_csv(here("data_filtered_50k.csv"))
-choiceData_comb_50k <- read_csv(here("choiceData_comb_50k.csv"))
+data_comb_50k <- read_csv(here( "data-processed", "data_filtered_50k.csv"))
+choiceData_comb_50k <- read_csv(here("data-processed","choiceData_comb_50k.csv"))
 
 #prep choice data for modeling
 choiceData_comb_50k <- choiceData_comb_50k %>%
@@ -268,6 +268,326 @@ save(m1_carBudgethigh_50k, file = here::here('models', 'model_comb_carBudgethigh
 
 
 #---------------------------------Appendix-----------------------------------------
+
+choiceData_inclessthan25_50k <- choiceData_comb_50k %>% 
+  left_join(
+    data_comb_50k %>% 
+      select(session, income),
+    by = "session") %>%
+  filter(income == "under25") 
+length(unique(choiceData_inclessthan25_50k$session))
+
+#fix id and obsID for high income
+choiceData_inclessthan25_50k <- choiceData_inclessthan25_50k %>%
+  mutate(
+    id = rep(seq(1:length(unique(choiceData_inclessthan25_50k$session))), each = 40),
+    obsID = rep(seq(n() / 4), each = 4))
+
+#m1 model high (rebate 0wks govt)
+
+m1_inclessthan25_50k <- logitr::logitr(
+  data = choiceData_inclessthan25_50k, 
+  outcome = 'choice',
+  obsID = 'obsID',
+  price = 'amount',
+  modelSpace = 'wtp',
+  clusterID = 'id',
+  numMultiStarts = 30,
+  pars = c(
+    'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
+    'timing_taxCredit_immediate',
+    'timing_rebate_2', 'timing_rebate_6',
+    'source_rebate_oem', 'source_rebate_dealer')
+)
+
+summary(m1_inclessthan25_50k)
+save(m1_inclessthan25_50k, file = here::here('models', 'model_comb_inc_lessthan25_m1_50k.RData'))
+
+#25-35
+choiceData_inc25_35_50k <- choiceData_comb_50k %>% 
+  left_join(
+    data_comb_50k %>% 
+      select(session, income),
+    by = "session") %>%
+  filter(income == "inc_25to35") 
+length(unique(choiceData_inc25_35_50k$session))
+
+#fix id and obsID
+choiceData_inc25_35_50k <- choiceData_inc25_35_50k %>%
+  mutate(
+    id = rep(seq(1:length(unique(choiceData_inc25_35_50k$session))), each = 40),
+    obsID = rep(seq(n() / 4), each = 4))
+
+#m1 model (rebate 0wks govt)
+
+m1_inc25_35_50k <- logitr::logitr(
+  data = choiceData_inc25_35_50k, 
+  outcome = 'choice',
+  obsID = 'obsID',
+  price = 'amount',
+  modelSpace = 'wtp',
+  clusterID = 'id',
+  numMultiStarts = 30,
+  pars = c(
+    'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
+    'timing_taxCredit_immediate',
+    'timing_rebate_2', 'timing_rebate_6',
+    'source_rebate_oem', 'source_rebate_dealer')
+)
+
+summary(m1_inc25_35_50k)
+save(m1_inc25_35_50k, file = here::here('models', 'model_comb_inc_25-35_m1_50k.RData'))
+
+#35-50
+choiceData_inc35_50_50k <- choiceData_comb_50k %>% 
+  left_join(
+    data_comb_50k %>% 
+      select(session, income),
+    by = "session") %>%
+  filter(income == "inc_35to50") 
+length(unique(choiceData_inc35_50_50k$session))
+
+#fix id and obsID
+choiceData_inc35_50_50k <- choiceData_inc35_50_50k %>%
+  mutate(
+    id = rep(seq(1:length(unique(choiceData_inc35_50_50k$session))), each = 40),
+    obsID = rep(seq(n() / 4), each = 4))
+
+#m1 model (rebate 0wks govt)
+
+m1_inc35_50_50k <- logitr::logitr(
+  data = choiceData_inc35_50_50k, 
+  outcome = 'choice',
+  obsID = 'obsID',
+  price = 'amount',
+  modelSpace = 'wtp',
+  clusterID = 'id',
+  numMultiStarts = 30,
+  pars = c(
+    'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
+    'timing_taxCredit_immediate',
+    'timing_rebate_2', 'timing_rebate_6',
+    'source_rebate_oem', 'source_rebate_dealer')
+)
+
+summary(m1_inc35_50_50k)
+save(m1_inc35_50_50k, file = here::here('models', 'model_comb_inc_35-50_m1_50k.RData'))
+
+
+#50-75
+choiceData_inc50_75_50k <- choiceData_comb_50k %>% 
+  left_join(
+    data_comb_50k %>% 
+      select(session, income),
+    by = "session") %>%
+  filter(income == "inc_50to75") 
+length(unique(choiceData_inc50_75_50k$session))
+
+#fix id and obsID
+choiceData_inc50_75_50k <- choiceData_inc50_75_50k %>%
+  mutate(
+    id = rep(seq(1:length(unique(choiceData_inc50_75_50k$session))), each = 40),
+    obsID = rep(seq(n() / 4), each = 4))
+
+#m1 model (rebate 0wks govt)
+
+m1_inc50_75_50k <- logitr::logitr(
+  data = choiceData_inc50_75_50k, 
+  outcome = 'choice',
+  obsID = 'obsID',
+  price = 'amount',
+  modelSpace = 'wtp',
+  clusterID = 'id',
+  numMultiStarts = 30,
+  pars = c(
+    'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
+    'timing_taxCredit_immediate',
+    'timing_rebate_2', 'timing_rebate_6',
+    'source_rebate_oem', 'source_rebate_dealer')
+)
+
+summary(m1_inc50_75_50k)
+save(m1_inc50_75_50k, file = here::here('models', 'model_comb_inc_50-75_m1_50k.RData'))
+
+
+#75-100
+choiceData_inc75_100_50k <- choiceData_comb_50k %>% 
+  left_join(
+    data_comb_50k %>% 
+      select(session, income),
+    by = "session") %>%
+  filter(income == "inc_75to100") 
+length(unique(choiceData_inc75_100_50k$session))
+
+#fix id and obsID
+choiceData_inc75_100_50k <- choiceData_inc75_100_50k %>%
+  mutate(
+    id = rep(seq(1:length(unique(choiceData_inc75_100_50k$session))), each = 40),
+    obsID = rep(seq(n() / 4), each = 4))
+
+#m1 model (rebate 0wks govt)
+
+m1_inc75_100_50k <- logitr::logitr(
+  data = choiceData_inc75_100_50k, 
+  outcome = 'choice',
+  obsID = 'obsID',
+  price = 'amount',
+  modelSpace = 'wtp',
+  clusterID = 'id',
+  numMultiStarts = 30,
+  pars = c(
+    'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
+    'timing_taxCredit_immediate',
+    'timing_rebate_2', 'timing_rebate_6',
+    'source_rebate_oem', 'source_rebate_dealer')
+)
+
+summary(m1_inc75_100_50k)
+save(m1_inc75_100_50k, file = here::here('models', 'model_comb_inc_75-100_m1_50k.RData'))
+
+
+#100-150
+choiceData_inc100_150_50k <- choiceData_comb_50k %>% 
+  left_join(
+    data_comb_50k %>% 
+      select(session, income),
+    by = "session") %>%
+  filter(income == "inc_100to150") 
+length(unique(choiceData_inc100_150_50k$session))
+
+#fix id and obsID
+choiceData_inc100_150_50k <- choiceData_inc100_150_50k %>%
+  mutate(
+    id = rep(seq(1:length(unique(choiceData_inc100_150_50k$session))), each = 40),
+    obsID = rep(seq(n() / 4), each = 4))
+
+#m1 model (rebate 0wks govt)
+
+m1_inc100_150_50k <- logitr::logitr(
+  data = choiceData_inc100_150_50k, 
+  outcome = 'choice',
+  obsID = 'obsID',
+  price = 'amount',
+  modelSpace = 'wtp',
+  clusterID = 'id',
+  numMultiStarts = 30,
+  pars = c(
+    'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
+    'timing_taxCredit_immediate',
+    'timing_rebate_2', 'timing_rebate_6',
+    'source_rebate_oem', 'source_rebate_dealer')
+)
+
+summary(m1_inc100_150_50k)
+save(m1_inc100_150_50k, file = here::here('models', 'model_comb_inc_100-150_m1_50k.RData'))
+
+
+#150-200
+choiceData_inc150_200_50k <- choiceData_comb_50k %>% 
+  left_join(
+    data_comb_50k %>% 
+      select(session, income),
+    by = "session") %>%
+  filter(income == "inc_150to200") 
+length(unique(choiceData_inc150_200_50k$session))
+
+#fix id and obsID
+choiceData_inc150_200_50k <- choiceData_inc150_200_50k %>%
+  mutate(
+    id = rep(seq(1:length(unique(choiceData_inc150_200_50k$session))), each = 40),
+    obsID = rep(seq(n() / 4), each = 4))
+
+#m1 model (rebate 0wks govt)
+
+m1_inc150_200_50k <- logitr::logitr(
+  data = choiceData_inc150_200_50k, 
+  outcome = 'choice',
+  obsID = 'obsID',
+  price = 'amount',
+  modelSpace = 'wtp',
+  clusterID = 'id',
+  numMultiStarts = 30,
+  pars = c(
+    'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
+    'timing_taxCredit_immediate',
+    'timing_rebate_2', 'timing_rebate_6',
+    'source_rebate_oem', 'source_rebate_dealer')
+)
+
+summary(m1_inc150_200_50k)
+save(m1_inc150_200_50k, file = here::here('models', 'model_comb_inc_150-200_m1_50k.RData'))
+
+
+#200-250
+choiceData_inc200_250_50k <- choiceData_comb_50k %>% 
+  left_join(
+    data_comb_50k %>% 
+      select(session, income),
+    by = "session") %>%
+  filter(income == "inc_200to250") 
+length(unique(choiceData_inc200_250_50k$session))
+
+#fix id and obsID
+choiceData_inc200_250_50k <- choiceData_inc200_250_50k %>%
+  mutate(
+    id = rep(seq(1:length(unique(choiceData_inc200_250_50k$session))), each = 40),
+    obsID = rep(seq(n() / 4), each = 4))
+
+#m1 model (rebate 0wks govt)
+
+m1_inc200_250_50k <- logitr::logitr(
+  data = choiceData_inc200_250_50k, 
+  outcome = 'choice',
+  obsID = 'obsID',
+  price = 'amount',
+  modelSpace = 'wtp',
+  clusterID = 'id',
+  numMultiStarts = 30,
+  pars = c(
+    'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
+    'timing_taxCredit_immediate',
+    'timing_rebate_2', 'timing_rebate_6',
+    'source_rebate_oem', 'source_rebate_dealer')
+)
+
+summary(m1_inc200_250_50k)
+save(m1_inc200_250_50k, file = here::here('models', 'model_comb_inc_200-250_m1_50k.RData'))
+
+
+#250-300
+choiceData_inc250_300_50k <- choiceData_comb_50k %>% 
+  left_join(
+    data_comb_50k %>% 
+      select(session, income),
+    by = "session") %>%
+  filter(income == "inc_250to300") 
+length(unique(choiceData_inc250_300_50k$session))
+
+#fix id and obsID
+choiceData_inc250_300_50k <- choiceData_inc250_300_50k %>%
+  mutate(
+    id = rep(seq(1:length(unique(choiceData_inc250_300_50k$session))), each = 40),
+    obsID = rep(seq(n() / 4), each = 4))
+
+#m1 model (rebate 0wks govt)
+
+m1_inc250_300_50k <- logitr::logitr(
+  data = choiceData_inc250_300_50k, 
+  outcome = 'choice',
+  obsID = 'obsID',
+  price = 'amount',
+  modelSpace = 'wtp',
+  clusterID = 'id',
+  numMultiStarts = 30,
+  pars = c(
+    'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
+    'timing_taxCredit_immediate',
+    'timing_rebate_2', 'timing_rebate_6',
+    'source_rebate_oem', 'source_rebate_dealer')
+)
+
+summary(m1_inc250_300_50k)
+save(m1_inc250_300_50k, file = here::here('models', 'model_comb_inc_250-300_m1_50k.RData'))
 
 #3 - Consider PEV
 
