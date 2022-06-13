@@ -88,23 +88,23 @@ covariance <- vcov(mxl_comb_50k)
 wtp_draws <- as.data.frame(mvrnorm(10^4, coefs, covariance))
 
 #rename columns
-setnames(wtp_draws, "type_taxCredit_mu", "type_taxCredit_taxFiling_mu")
-setnames(wtp_draws, "type_taxCredit_sigma", "type_taxCredit_taxFiling_sigma")
+setnames(wtp_draws, "type_taxCredit", "type_taxCredit_taxFiling")
+setnames(wtp_draws, "sd_type_taxCredit", "sd_type_taxCredit_taxFiling")
 
 #create data frame for options from draws
 wtp_draws <- wtp_draws %>% 
   mutate(
-    type_taxCredit_immediate_mu = type_taxCredit_taxFiling_mu + timing_taxCredit_immediate_mu,
-    type_rebate_6wks_dealer_mu = timing_rebate_6_mu + source_rebate_dealer_mu,
-    type_rebate_2wks_dealer_mu = timing_rebate_2_mu + source_rebate_dealer_mu,
-    type_rebate_0wks_dealer_mu = source_rebate_dealer_mu,
-    type_rebate_6wks_oem_mu = timing_rebate_6_mu + source_rebate_oem_mu, 
-    type_rebate_2wks_oem_mu = timing_rebate_2_mu + source_rebate_oem_mu,
-    type_rebate_0wks_oem_mu = source_rebate_oem_mu,
-    type_rebate_6wks_govt_mu = timing_rebate_6_mu,
-    type_rebate_2wks_govt_mu = timing_rebate_2_mu
+    type_taxCredit_immediate = type_taxCredit_taxFiling + timing_taxCredit_immediate,
+    type_rebate_6wks_dealer = timing_rebate_6 + source_rebate_dealer,
+    type_rebate_2wks_dealer = timing_rebate_2 + source_rebate_dealer,
+    type_rebate_0wks_dealer = source_rebate_dealer,
+    type_rebate_6wks_oem = timing_rebate_6 + source_rebate_oem, 
+    type_rebate_2wks_oem = timing_rebate_2 + source_rebate_oem,
+    type_rebate_0wks_oem = source_rebate_oem,
+    type_rebate_6wks_govt = timing_rebate_6,
+    type_rebate_2wks_govt = timing_rebate_2
   ) %>%
-  select(contains("type"), -contains("sigma")) 
+  select(contains("type"), -contains("sd")) 
 
 # CI of draws 
 wtp_ci_mxl <- ci(wtp_draws)

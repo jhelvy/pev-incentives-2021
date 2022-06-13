@@ -33,7 +33,7 @@ timeframe_taxcred <- 1/2
 get_discount_rate(taxcred_taxfile_value, timeframe_taxcred)
 
 # MXL
-taxcred_taxfile_value_mxl <- filter(wtp_ci_mxl, par == "type_taxCredit_taxFiling_mu")$mean
+taxcred_taxfile_value_mxl <- filter(wtp_ci_mxl, par == "type_taxCredit_taxFiling")$mean
 get_discount_rate(taxcred_taxfile_value_mxl, timeframe_taxcred)
 
 # 6-week rebate
@@ -44,7 +44,7 @@ timefame_rebate <- 6/52
 get_discount_rate(rebate6wks_value, timefame_rebate)
 
 # MXL
-rebate6wks_value_mxl <- filter(wtp_ci_mxl, par == "type_rebate_6wks_govt_mu")$mean
+rebate6wks_value_mxl <- filter(wtp_ci_mxl, par == "type_rebate_6wks_govt")$mean
 get_discount_rate(rebate6wks_value_mxl, timefame_rebate)
 
 # 2-week rebate
@@ -55,7 +55,7 @@ timefame_rebate_2 <- 2/52
 get_discount_rate(rebate2wks_value, timefame_rebate_2)
 
 # MXL
-rebate2wks_value_mxl <- filter(wtp_ci_mxl, par == "type_rebate_2wks_govt_mu")$mean
+rebate2wks_value_mxl <- filter(wtp_ci_mxl, par == "type_rebate_2wks_govt")$mean
 get_discount_rate(rebate2wks_value_mxl, timefame_rebate_2)
 
 
@@ -64,8 +64,8 @@ get_discount_rate(rebate2wks_value_mxl, timefame_rebate_2)
 #Tax credit spend based on EV sales vs. customer value
 
 evsales_2010to2019 <- raw_data_start <- read_csv(here("usEvSales.csv"))
-
-wtp_ci <- read_csv(here("wtp_ci_total_m1.csv")) %>% filter(str_detect(wtp_ci$par, "taxCredit_taxFiling"))
+load(here::here("wtp", "wtp_ci.RData"))
+wtp_ci <- wtp_ci %>% filter(str_detect(wtp_ci$par, "taxCredit_taxFiling"))
 evsales_phev <- read_csv(here("evsales_phev_vehicle_list.csv"))
 ev_phaseout <- read_csv(here("evphaseout_list.csv")) %>% select(vehicle, year, month, taxcredit)
 
@@ -98,6 +98,8 @@ evsales_taxcred <- evsales_taxcred %>%
     diff = taxcred_spend - taxcred_spend_adj,
     year = as.character(year)
   )
+
+font_add_google("Roboto Condensed", "Roboto Condensed")
 
 mainFont <- "Fira Sans Condensed"
 annFont <- "Roboto Condensed"

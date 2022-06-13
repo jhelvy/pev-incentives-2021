@@ -37,9 +37,11 @@ df_compare$label <- c(
 
 # visual 2 - facet
 
-# library(showtext)
+library(showtext)
 
-# font_add_google("Fira Sans Condensed", "fira")
+font_add_google("Fira Sans Condensed", "Fira Sans Condensed")
+showtext_auto() 
+windows()
 
 # showtext_opts(dpi = 300)
 # showtext_auto(enable = TRUE)
@@ -75,6 +77,8 @@ barplot_wtp2_m1_50k <- df_compare %>%
     plot.tag = element_text(size = 9, face = "italic", family = font_main)
   ) +
   coord_cartesian(clip = "off")
+
+barplot_wtp2_m1_50k
 
 # Save plots
 ggsave(

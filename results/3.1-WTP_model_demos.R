@@ -137,7 +137,7 @@ wtp_ci_used <- wtp_ci_used %>%
 wtp_ci_vehicle <- wtp_ci_new %>%
   bind_rows(wtp_ci_used)
 
-wtp_ci_inc
+wtp_ci_vehicle
 save(wtp_ci_vehicle, file = here::here("wtp", "wtp_ci_vehicle.RData"))
 
 
