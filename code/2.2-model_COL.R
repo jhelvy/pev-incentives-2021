@@ -12,15 +12,15 @@ options(scipen=999)
 
 #Building Cost of Living (COL) data table--------------------------------
 
-data_comb_50k <- read_csv(here("data_filtered_50k.csv"))
-choiceData_comb_50k <- read_csv(here("choiceData_comb_50k.csv"))
+data_comb_50k <- read_csv(here("data-processed", "data_filtered_50k.csv"))
+choiceData_comb_50k <- read_csv(here("data-processed", "choiceData_comb_50k.csv"))
 
 #filter zips from data
 data_comb_50k_zip <- data_comb_50k %>%
   select(session, zipcode)
 
 #Regional Price Parity - BEA 2020
-rpp <- read_excel(here("rpp1221.xlsx"), sheet = "Table 4", skip = 3)
+rpp <- read_excel(here("data", "rpp1221.xlsx"), sheet = "Table 4", skip = 3)
 head(rpp)
 
 #clean up rpp import col names
@@ -46,7 +46,7 @@ rpp <- rpp %>%
 #   left_join(rpp, by = "area")
 
 #HUD-USPS cross walk ZIP to CBSA Q4 2021 US Dept of Housing and Urban Dev https://www.huduser.gov/portal/datasets/usps_crosswalk.html#data 
-cbsa <- read_excel(here("ZIP_CBSA_122021.xlsx"))
+cbsa <- read_excel(here("data", "ZIP_CBSA_122021.xlsx"))
 head(cbsa)
 # length(unique(cbsa$zip))
 
@@ -65,7 +65,7 @@ cbsa <- cbsa %>%
   select(zipcode, cbsa)
 
 #CBSA reference w/ cbsa codes and names Census Bureau March 2020 https://www.census.gov/geographies/reference-files/time-series/demo/metro-micro/delineation-files.html
-cbsa_ref <- read_excel(here("cbsa_2020.xls"), skip = 2)
+cbsa_ref <- read_excel(here("data", "cbsa_2020.xls"), skip = 2)
 head(cbsa_ref)
 
 cbsa_ref <- cbsa_ref %>%
@@ -75,7 +75,6 @@ cbsa_ref <- cbsa_ref %>%
   ) %>% 
   select(cbsa, cbsa_name)
 
-
 #join cbsa codes and names
 cbsa <- cbsa %>% 
   left_join(cbsa_ref, by = "cbsa") 
@@ -84,7 +83,6 @@ cbsa <- cbsa %>%
 data_cbsa <- data_comb_50k_zip %>%
   left_join(cbsa, by = c("zipcode")) %>%
   distinct(session, .keep_all = TRUE)
-
 data_cbsa <- data_cbsa %>%
   rename(
     area = cbsa_name
@@ -111,6 +109,7 @@ choiceData_comb_50k_col <- choiceData_comb_50k %>%
 #adjust amounts & filter out NAs
 choiceData_comb_50k_col <- choiceData_comb_50k_col %>%
   mutate(
+    amount = amount / 1000,
     amount_rpp_adj = round(amount+(amount*rpp_adj),0)
   ) %>%
   filter(!is.na(amount_rpp_adj)) 
@@ -162,7 +161,6 @@ m1_comb_50k_col <- logitr::logitr(
 )
 summary(m1_comb_50k_col)
 
-
 # Save results
 save(m1_comb_50k_col, file = here::here('models', 'model_comb_wtp_m1_50k_col.RData'))
 
@@ -175,10 +173,10 @@ mxl_comb_50k_col <- logitr::logitr(
   data   = choiceData_comb_50k_col,
   outcome = 'choice',
   obsID  = 'obsID',
-  price = 'amount_rpp_adj',
-  modelSpace = 'wtp',
   panelID = 'id',
   clusterID = 'id',
+  price = 'amount_rpp_adj',
+  modelSpace = 'wtp',
   numMultiStarts = 30,
   numCores = 1,
   pars = c(
@@ -220,9 +218,9 @@ m1_low_50k_col <- logitr::logitr(
   data = choiceData_low_50k_col, 
   outcome = 'choice',
   obsID = 'obsID',
+  clusterID = 'id',
   price = 'amount_rpp_adj',
   modelSpace = 'wtp',
-  clusterID = 'id',
   numMultiStarts = 30,
   pars = c(
     'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
@@ -258,9 +256,9 @@ m1_high_50k_col <- logitr::logitr(
   data = choiceData_high_50k_col, 
   outcome = 'choice',
   obsID = 'obsID',
+  clusterID = 'id',
   price = 'amount_rpp_adj',
   modelSpace = 'wtp',
-  clusterID = 'id',
   numMultiStarts = 30,
   pars = c(
     'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
@@ -301,9 +299,9 @@ m1_new_50k_col <- logitr::logitr(
   data = choiceData_new_50k_col, 
   outcome = 'choice',
   obsID = 'obsID',
+  clusterID = 'id',
   price = 'amount_rpp_adj',
   modelSpace = 'wtp',
-  clusterID = 'id',
   numMultiStarts = 30,
   pars = c(
     'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
@@ -339,9 +337,9 @@ m1_used_50k_col <- logitr::logitr(
   data = choiceData_used_50k_col, 
   outcome = 'choice',
   obsID = 'obsID',
+  clusterID = 'id',
   price = 'amount_rpp_adj',
   modelSpace = 'wtp',
-  clusterID = 'id',
   numMultiStarts = 30,
   pars = c(
     'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
@@ -378,9 +376,9 @@ m1_carBudgetlow_50k_col <- logitr::logitr(
   data = choiceData_carBudgetlow_50k_col, 
   outcome = 'choice',
   obsID = 'obsID',
+  clusterID = 'id',
   price = 'amount_rpp_adj',
   modelSpace = 'wtp',
-  clusterID = 'id',
   numMultiStarts = 30,
   pars = c(
     'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
@@ -414,9 +412,9 @@ m1_carBudgethigh_50k_col <- logitr::logitr(
   data = choiceData_carBudgethigh_50k_col, 
   outcome = 'choice',
   obsID = 'obsID',
+  clusterID = 'id',
   price = 'amount_rpp_adj',
   modelSpace = 'wtp',
-  clusterID = 'id',
   numMultiStarts = 30,
   pars = c(
     'type_salesTax', 'type_taxCredit', 'type_taxDeduction',
@@ -430,7 +428,7 @@ save(m1_carBudgethigh_50k_col, file = here::here('models', 'model_comb_carBudget
 
 #flextable
 
-source("0-functions.R")
+source(here("code", "0-functions.R"))
 
 library(officer)
 library(flextable)
