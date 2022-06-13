@@ -43,7 +43,14 @@ wtp_draws <- wtp_draws %>%
 # CI of draws 
 wtp_ci <- ci(wtp_draws)
 
-
+# Convert to dollars (model was estimated in thousands of dollars)
+wtp_ci <- wtp_ci %>% 
+  mutate(
+    mean = mean*1000,
+    lower = lower*1000,
+    upper = upper*1000,
+  )
+  
 # add type facet
 wtp_ci$par <- row.names(wtp_ci)
 
@@ -109,6 +116,13 @@ wtp_draws <- wtp_draws %>%
 # CI of draws 
 wtp_ci_mxl <- ci(wtp_draws)
 
+# Convert to dollars (model was estimated in thousands of dollars)
+wtp_ci_mxl <- wtp_ci_mxl %>% 
+  mutate(
+    mean = mean*1000,
+    lower = lower*1000,
+    upper = upper*1000,
+  )
 
 # add type facet
 wtp_ci_mxl$par <- row.names(wtp_ci_mxl)
