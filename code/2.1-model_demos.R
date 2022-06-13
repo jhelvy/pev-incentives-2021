@@ -2764,13 +2764,21 @@ save(m1_lease_50k, file = here::here('models', 'model_comb_lease_m1_50k.RData'))
 
 #flextable
 
-source("0-functions.R")
+source("code/0-functions.R")
 
 library(officer)
 library(flextable)
 
 load(here::here('models', 'model_comb_wtp_m1_50k.RData'))
 load(here::here('models', 'model_comb_wtp_mxl_m1_50k.RData'))
+
+#Subgroups
+load(here::here('models', 'model_comb_inc_high_m1_50k.RData'))
+load(here::here('models', 'model_comb_inc_low_m1_50k.RData'))
+load(here::here('models', 'model_comb_new_m1_50k.RData'))
+load(here::here('models', 'model_comb_used_m1_50k.RData'))
+load(here::here('models', 'model_comb_carBudgethigh_m1_50k.RData'))
+load(here::here('models', 'model_comb_carBudgetlow_m1_50k.RData'))
 
 summary_sl2 <- make_coef_table3(m1_comb_50k)
 summary_mxl2 <- make_coef_table3(mxl_comb_50k) #%>% mutate(coefficients = str_remove(coefficients, "_mu"))

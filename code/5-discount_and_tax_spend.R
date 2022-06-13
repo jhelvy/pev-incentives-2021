@@ -63,11 +63,11 @@ get_discount_rate(rebate2wks_value_mxl, timefame_rebate_2)
 
 #Tax credit spend based on EV sales vs. customer value
 
-evsales_2010to2019 <- raw_data_start <- read_csv(here("usEvSales.csv"))
+evsales_2010to2019 <- raw_data_start <- read_csv(here( "data","usEvSales.csv"))
 load(here::here("wtp", "wtp_ci.RData"))
 wtp_ci <- wtp_ci %>% filter(str_detect(wtp_ci$par, "taxCredit_taxFiling"))
-evsales_phev <- read_csv(here("evsales_phev_vehicle_list.csv"))
-ev_phaseout <- read_csv(here("evphaseout_list.csv")) %>% select(vehicle, year, month, taxcredit)
+evsales_phev <- read_csv(here( "data","evsales_phev_vehicle_list.csv"))
+ev_phaseout <- read_csv(here("data", "evphaseout_list.csv")) %>% select(vehicle, year, month, taxcredit)
 
 #create data frame with accurate tax credit amounts for phev, phaseouts
 evsales_taxcred <- evsales_2010to2019 %>%
@@ -132,7 +132,7 @@ evsales_taxcred_plot <- evsales_taxcred %>%
     label = "If the subsidy had been delivered as an immediate rebate,\nthe federal government could have saved $1.8 billion.") +
   theme_cowplot(font_family = mainFont)
 
-# evsales_taxcred_plot
+evsales_taxcred_plot
 
 # Save plots 
 ggsave(
