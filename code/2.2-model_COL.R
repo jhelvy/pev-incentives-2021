@@ -102,6 +102,19 @@ data_cbsa <- data_cbsa %>%
     rpp_adj = (100-rpp)/100
   )
 
+#join to filtered data
+data_comb_50k_col <- data_comb_50k %>%
+  left_join(data_cbsa, by = "session")
+
+#filter out NAs
+data_comb_50k_col <- data_comb_50k_col %>%
+  filter(!is.na(rpp_adj)) 
+
+# Save formatted COL choice data
+write_csv(data_comb_50k_col, here::here("data-processed", "data_filtered_COL.csv"))
+
+
+
 #join to choice data
 choiceData_comb_50k_col <- choiceData_comb_50k %>%
   left_join(data_cbsa, by = "session")
@@ -119,6 +132,10 @@ choiceData_comb_50k_col <- choiceData_comb_50k_col %>%
   mutate(
     id = rep(seq(1:length(unique(choiceData_comb_50k_col$session))), each = 40),
     obsID = rep(seq(n() / 4), each = 4))
+
+
+# Save formatted COL choice data
+write_csv(choiceData_comb_50k_col, here::here("data-processed", "choiceData_COL.csv"))
 
 #add data for model
 choiceData_comb_50k_col <- choiceData_comb_50k_col %>%

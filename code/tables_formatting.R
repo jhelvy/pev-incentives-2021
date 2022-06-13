@@ -10,7 +10,7 @@ library(Hmisc)
 source("0-functions.R")
 
 #Demos
-data_comb_50k <- read_csv(here("data_filtered_50k.csv"))
+data_comb_50k <- read_csv(here("data-processed","data_filtered_COL.csv"))
 
 key_stats <-data_comb_50k %>%
   select(gender, yearOfBirth, inMarket, new_or_used, income) %>%

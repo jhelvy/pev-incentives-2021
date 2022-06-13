@@ -30,7 +30,8 @@ choiceData_comb_50k <- choiceData_comb_50k %>%
     source_rebate_government = type_rebate*source_rebate_government,
     source_rebate_oem = type_rebate*source_rebate_oem)
 
-choiceData_comb_50k$amount <- -1*choiceData_comb_50k$amount 
+# Negative of amount as it's not a price you pay but rather a subsidy you get
+choiceData_comb_50k$amount <- -1 * choiceData_comb_50k$amount / 1000
 
 #1 - Income (high/low)
 
