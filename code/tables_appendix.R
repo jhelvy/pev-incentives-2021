@@ -167,6 +167,127 @@ table3 <- tbl_summary(demos) %>%
   gtsummary::as_flex_table()
 print(table3, preview = "docx")
 
+#unadjusted model summary table
+#flextable
+
+source("code/0-functions.R")
+
+library(officer)
+library(flextable)
+
+load(here::here('models', 'model_comb_wtp_m1_50k.RData'))
+load(here::here('models', 'model_comb_wtp_mxl_m1_50k.RData'))
+
+#Subgroups
+load(here::here('models', 'model_comb_inc_high_m1_50k.RData'))
+load(here::here('models', 'model_comb_inc_low_m1_50k.RData'))
+load(here::here('models', 'model_comb_new_m1_50k.RData'))
+load(here::here('models', 'model_comb_used_m1_50k.RData'))
+load(here::here('models', 'model_comb_carBudgethigh_m1_50k.RData'))
+load(here::here('models', 'model_comb_carBudgetlow_m1_50k.RData'))
+
+summary_sl2 <- make_coef_table3(m1_comb_50k)
+summary_mxl2 <- make_coef_table3(mxl_comb_50k) #%>% mutate(coefficients = str_remove(coefficients, "_mu"))
+summary_high2 <- make_coef_table3(m1_high_50k) 
+summary_low2 <- make_coef_table3(m1_low_50k) 
+summary_new2 <- make_coef_table3(m1_new_50k) 
+summary_used2 <- make_coef_table3(m1_used_50k)
+summary_more30k <- make_coef_table3(m1_carBudgethigh_50k)
+summary_less30k <- make_coef_table3(m1_carBudgetlow_50k)
+
+
+summary1 <- summary_sl2 %>%
+  full_join(summary_mxl2, by = "coefficients") %>%
+  left_join(summary_high2, by = "coefficients") %>%
+  left_join(summary_low2, by = "coefficients") %>%
+  left_join(summary_new2, by = "coefficients") %>%
+  left_join(summary_used2,by = "coefficients") %>%
+  left_join(summary_more30k,by = "coefficients") %>%
+  left_join(summary_less30k,by = "coefficients") 
+
+
+summary1 <- flextable(summary1)
+theme_vanilla(summary1)
+# summary1 <- set_header_labels(summary1,
+#                               values = list(
+#                                 
+#                               ))
+summary1 <- add_header_row(
+  summary1, values = c("", "Simple Logit", "Mixed Logit", "High Income", "Low Income", "New Car Buyers", "Used Car Buyers", "Budget >$30k", "Budget <$30k"),
+  colwidths = c(1,1,1,1,1,1,1,1,1)
+)
+#summary1 <- add_header_lines( summary1, values = c("Simple Logit Model"))
+summary1<- autofit(summary1)
+summary1 <- add_footer_lines(summary1, values = "Signif. codes:  '***' = 0.001, '**' = 0.01, '*' = 0.05, '.' = 0.1, ' ' = 1")
+summary1 <- align(summary1, align = "right", part = "body")
+# summary1 <- align(summary1, j= c("(Error)"), align = "center", part = "all")
+# summary1 <- align(summary1, i = c("Simple Logit Model"), align = "center")
+print(summary1, preview = "docx")
+
+#table of income brackets
+#flextable
+
+source("code/0-functions.R")
+
+library(officer)
+library(flextable)
+
+load(here::here('models', 'model_comb_inc_lessthan25_m1_50k.RData'))
+load(here::here('models', 'model_comb_inc_25-35_m1_50k.RData'))
+load(here::here('models', 'model_comb_inc_35-50_m1_50k.RData'))
+load(here::here('models', 'model_comb_inc_50-75_m1_50k.RData'))
+load(here::here('models', 'model_comb_inc_75-100_m1_50k.RData'))
+load(here::here('models', 'model_comb_inc_100-150_m1_50k.RData'))
+load(here::here('models', 'model_comb_inc_150-200_m1_50k.RData'))
+load(here::here('models', 'model_comb_inc_200-250_m1_50k.RData'))
+load(here::here('models', 'model_comb_inc_250-300_m1_50k.RData'))
+load(here::here('models', 'model_comb_inc_300-400_m1_50k.RData'))
+load(here::here('models', 'model_comb_inc_400plus_m1_50k.RData'))
+
+summary_1 <- make_coef_table3(m1_inclessthan25_50k)
+summary_2 <- make_coef_table3(m1_inc25_35_50k)
+summary_3 <- make_coef_table3(m1_inc35_50_50k) 
+summary_4 <- make_coef_table3(m1_inc50_75_50k) 
+summary_5 <- make_coef_table3(m1_inc75_100_50k) 
+summary_6 <- make_coef_table3(m1_inc100_150_50k)
+summary_7 <- make_coef_table3(m1_inc150_200_50k)
+summary_8 <- make_coef_table3(m1_inc200_250_50k)
+summary_9 <- make_coef_table3(m1_inc250_300_50k)
+summary_10 <- make_coef_table3(m1_inc300_400_50k)
+summary_11 <- make_coef_table3(m1_inc400plus_50k)
+
+
+summary1 <- summary_1 %>%
+  left_join(summary_2, by = "coefficients") %>%
+  left_join(summary_3, by = "coefficients") %>%
+  left_join(summary_4, by = "coefficients") %>%
+  left_join(summary_5,by = "coefficients") %>%
+  left_join(summary_6,by = "coefficients") %>%
+  left_join(summary_7,by = "coefficients") %>%
+  left_join(summary_8,by = "coefficients") %>%
+  left_join(summary_9,by = "coefficients") %>%
+  left_join(summary_10,by = "coefficients") %>%
+  left_join(summary_11,by = "coefficients") 
+
+
+summary1 <- flextable(summary1)
+theme_vanilla(summary1)
+# summary1 <- set_header_labels(summary1,
+#                               values = list(
+#                                 
+#                               ))
+summary1 <- add_header_row(
+  summary1, values = c("", "<25", "25-35", "35-50", "50-75", "75-100", "100-150", "150-200", "200-250" , "250-300", "300-400", "400+"),
+  colwidths = c(1,1,1,1,1,1,1,1,1,1,1,1)
+)
+#summary1 <- add_header_lines( summary1, values = c("Simple Logit Model"))
+summary1<- autofit(summary1)
+summary1 <- add_footer_lines(summary1, values = "Signif. codes:  '***' = 0.001, '**' = 0.01, '*' = 0.05, '.' = 0.1, ' ' = 1")
+summary1 <- align(summary1, align = "right", part = "body")
+# summary1 <- align(summary1, j= c("(Error)"), align = "center", part = "all")
+# summary1 <- align(summary1, i = c("Simple Logit Model"), align = "center")
+print(summary1, preview = "docx")
+
 #load coef table function
 source("0-functions.R")
 
@@ -182,12 +303,12 @@ load(here::here('models', 'model_comb_neighborEVyes_m1_50k.RData'))
 load(here::here('models', 'model_comb_neighborEVno_m1_50k.RData'))
 
 #make coefficient tables
-summary1 <- make_coef_table2(m1_knowSubyes_50k)
-summary2 <- make_coef_table2(m1_knowSubno_50k)
-summary3 <- make_coef_table2(m1_yesEV_50k) 
-summary4 <- make_coef_table2(m1_noEV_50k) 
-summary5 <- make_coef_table2(m1_neighborEVyes_50k)
-summary6 <- make_coef_table2(m1_neighborEVno_50k)
+summary1 <- make_coef_table3(m1_knowSubyes_50k)
+summary2 <- make_coef_table3(m1_knowSubno_50k)
+summary3 <- make_coef_table3(m1_yesEV_50k) 
+summary4 <- make_coef_table3(m1_noEV_50k) 
+summary5 <- make_coef_table3(m1_neighborEVyes_50k)
+summary6 <- make_coef_table3(m1_neighborEVno_50k)
 
 #join and rename rows
 summary_final <- summary1 %>%
@@ -213,7 +334,7 @@ theme_vanilla(summary1)
 #rename header rows based on models
 summary1 <- add_header_row(
   summary1, values = c("", "Knowledge Subsidy Yes", "Knowledge Subsidy No", "Consider PEV Yes", "Consider PEV No", "Neighbor PEV Yes", "Neighbor PEV No"),
-  colwidths = c(1,3,3,3,3,3,3))
+  colwidths = c(1,1,1,1,1,1,1))
 summary1<- autofit(summary1)
 summary1 <- add_footer_lines(summary1, values = "Signif. codes:  '***' = 0.001, '**' = 0.01, '*' = 0.05, '.' = 0.1, ' ' = 1")
 summary1 <- align(summary1, align = "right", part = "body")

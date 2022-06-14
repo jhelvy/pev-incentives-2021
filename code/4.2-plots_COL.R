@@ -114,9 +114,10 @@ df_compare$label <- c(
 
 # visual 2 - facet
 
-# library(showtext)
+library(showtext)
 
-# font_add_google("Fira Sans Condensed", "fira")
+font_add_google("Fira Sans Condensed", "Fira Sans Condensed")
+showtext_auto()
 
 # showtext_opts(dpi = 300)
 # showtext_auto(enable = TRUE)

@@ -258,7 +258,7 @@ choiceData_high_50k_col <- choiceData_comb_50k_col %>%
     data_comb_50k %>% 
       select(session, income),
     by = "session") %>%
-  filter(income != "under25" & income != "inc_25to35" & income != "inc_35to50")
+  filter(income != "under25" & income != "inc_25to35" & income != "inc_35to50" & income != "prefer_not_say")
 length(unique(choiceData_high_50k_col$session))
 
 #fix id & obsID for high income COL
@@ -470,7 +470,7 @@ summary1 <- summary_sl2 %>%
   left_join(summary_less30k,by = "coefficients") 
 
 
-summary1 <- flextable(summary1)
+summary1 <- flextable(summary_high2)
 theme_vanilla(summary1)
 # summary1 <- set_header_labels(summary1,
 #                               values = list(
